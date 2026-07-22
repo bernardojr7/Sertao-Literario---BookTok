@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function loggedIn() { return request.auth != null; }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isStudent() { return loggedIn() && profile().role == "student"; }
+    function isTeacher() { return loggedIn() && profile().role == "teacher"; }
+    function isCoordinator() { return loggedIn() && profile().role == "coordinator"; }
+    function isStaff() { return isTeacher() || isCoordinator(); }
+
+    match /users/{userId} {
+      allow read: if loggedIn();
+      allow create: if loggedIn() && request.auth.uid == userId;
+      allow update: if isCoordinator()
+        || (request.auth.uid == userId
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.xp == resource.data.xp
+            && request.resource.data.cactoscoins == resource.data.cactoscoins
+            && request.resource.data.level == resource.data.level
+            && request.resource.data.booksRead == resource.data.booksRead);
+      allow delete: if isCoordinator();
+    }
+
+    match /books/{bookId} {
+      allow read: if loggedIn();
+      allow create, update: if isStaff();
+      allow delete: if isCoordinator();
+    }
+
+    match /readings/{readingId} {
+      allow create: if isStudent()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == "pending";
+      allow read: if loggedIn();
+      allow update, delete: if isStaff();
+    }
+
+    match /missions/{missionId} {
+      allow read: if loggedIn();
+      allow create, update: if isStaff();
+      allow delete: if isCoordinator();
+    }
+
+    match /missionCompletions/{id} {
+      allow create: if isStudent()
+        && request.resource.data.userId == request.auth.uid;
+      allow read: if loggedIn();
+      allow update, delete: if isStaff();
+    }
+
+    match /posts/{postId} {
+      allow read: if loggedIn();
+      allow create: if loggedIn();
+      allow update, delete: if isCoordinator()
+        || resource.data.userId == request.auth.uid;
+    }
+
+    match /storeItems/{itemId} {
+      allow read: if loggedIn();
+      allow create, update: if isStaff();
+      allow delete: if isCoordinator();
+    }
+
+    match /purchases/{purchaseId} {
+      allow read: if isStaff() || resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    match /rewardTransactions/{txId} {
+      allow read: if isStaff() || resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    match /reports/{reportId} {
+      allow read: if isCoordinator();
+      allow create, update, delete: if false;
+    }
+  }
+}
