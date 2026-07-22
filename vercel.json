@@ -3,6 +3,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "description": "SPA fallback", "destination": "/index.html" }
   ]
 }
