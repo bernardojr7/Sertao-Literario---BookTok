@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function loggedIn() { return request.auth != null; }
+    function isStaff() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      ).data.role in ["teacher", "coordinator"];
+    }
+
+    match /reading-proofs/{userId}/{fileName} {
+      allow write: if loggedIn()
+        && request.auth.uid == userId
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+      allow read: if loggedIn();
+    }
+
+    match /book-covers/{fileName} {
+      allow read: if loggedIn();
+      allow write: if isStaff()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    match /booktok/{userId}/{fileName} {
+      allow read: if loggedIn();
+      allow write: if loggedIn()
+        && request.auth.uid == userId
+        && request.resource.size < 100 * 1024 * 1024
+        && request.resource.contentType.matches("video/.*");
+    }
+  }
+}
