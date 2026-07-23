@@ -1,357 +1,1484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sertão Literário</title>
 
-    
-    
-    Sertão Literário | Leitura, Comunidade e Conquistas
-    
-    • 
-    
-    
-    
-        tailwind.config = {
-            darkMode: 'class',
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-            theme: {
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --surface-2: #f0f2f5;
+      --text: #17202a;
+      --muted: #68717c;
+      --border: #e5e8ec;
+      --primary: #e88917;
+      --primary-dark: #b95f00;
+      --green: #2f9e62;
+      --cyan: #00bcd4;
+      --pink: #e94d89;
+      --danger: #d64545;
+      --shadow: 0 12px 30px rgba(27, 39, 51, .08);
+      --radius: 22px;
+    }
 
-                extend: {
+    body.dark {
+      --bg: #101419;
+      --surface: #182027;
+      --surface-2: #222c35;
+      --text: #f3f6f8;
+      --muted: #a9b2bb;
+      --border: #303c46;
+      --shadow: 0 12px 30px rgba(0, 0, 0, .28);
+    }
 
-                    colors: {
+    * {
+      box-sizing: border-box;
+    }
 
-                        sertao: {
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, sans-serif;
+      transition: background .2s, color .2s;
+    }
 
-                            amber: '#F59E0B',
+    h1, h2, h3, h4 {
+      font-family: "Baloo 2", cursive;
+      margin: 0;
+    }
 
-                            orange: '#D97706',
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
 
-                            green: '#059669',
+    button {
+      border: 0;
+      cursor: pointer;
+    }
 
-                            darkgreen: '#047857',
+    .hidden {
+      display: none !important;
+    }
 
-                            cyan: '#06B6D4',
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(232, 137, 23, .18), transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(47, 158, 98, .16), transparent 30%),
+        var(--bg);
+    }
 
-                            pink: '#EC4899',
+    .auth-card {
+      width: min(100%, 460px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
 
-                            slate: '#0f172a'
-                        }
-                    },
-                    fontFamily: {
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
 
-                        sans: ['Inter', 'sans-serif'],
+    .brand img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      border-radius: 18px;
+    }
 
-                        display: ['Space Grotesk', 'sans-serif'],
-                    }
+    .brand h1 {
+      font-size: 30px;
+      line-height: 1;
+      color: var(--primary);
+    }
+
+    .brand small {
+      color: var(--muted);
+      display: block;
+      margin-top: 5px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--surface-2);
+      border-radius: 14px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      background: transparent;
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 700;
+    }
+
+    .tabs button.active {
+      background: var(--surface);
+      color: var(--primary);
+      box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 12px 14px;
+      outline: none;
+      color: var(--text);
+      background: var(--surface);
+    }
+
+    .field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      border-radius: 13px;
+      padding: 12px 16px;
+      font-weight: 800;
+      transition: transform .2s, opacity .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: .92;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-ghost {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .message {
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      background: rgba(214, 69, 69, .1);
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247,248,250,.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+    }
+
+    body.dark .topbar {
+      background: rgba(16,20,25,.88);
+    }
+
+    .topbar-inner {
+      width: min(1180px, 100%);
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-brand img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .top-brand strong {
+      color: var(--primary);
+      font-family: "Baloo 2", cursive;
+      font-size: 22px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .user-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 9px 13px;
+      border-radius: 13px;
+      font-size: 13px;
+    }
+
+    .content {
+      width: min(1180px, 100%);
+      margin: auto;
+      padding: 28px 20px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(232,137,23,.94), rgba(185,95,0,.91)),
+        url("logo.png") center/contain no-repeat;
+      min-height: 190px;
+      border-radius: 28px;
+      padding: 28px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "🌵";
+      position: absolute;
+      right: 26px;
+      bottom: -20px;
+      font-size: 150px;
+      opacity: .17;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 5vw, 50px);
+      max-width: 650px;
+    }
+
+    .hero p {
+      max-width: 600px;
+      line-height: 1.6;
+      margin: 8px 0 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 28px 0 14px;
+    }
+
+    .section-title h2 {
+      font-size: 27px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card {
+      min-height: 130px;
+    }
+
+    .stat-card .emoji {
+      font-size: 27px;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 30px;
+      margin-top: 8px;
+      font-family: "Baloo 2", cursive;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress-line {
+      width: 100%;
+      height: 10px;
+      background: var(--surface-2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 8px 0 6px;
+    }
+
+    .progress-line span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: inherit;
+    }
+
+    .book-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .book-cover {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      border-radius: 17px;
+      background: var(--surface-2);
+    }
+
+    .book-card h3 {
+      font-size: 21px;
+    }
+
+    .book-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .book-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .mission-card {
+      border-left: 5px solid var(--pink);
+    }
+
+    .feed-card {
+      overflow: hidden;
+    }
+
+    .feed-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--green));
+      color: white;
+      font-weight: 800;
+    }
+
+    .feed-card video,
+    .feed-card img {
+      width: 100%;
+      max-height: 370px;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #000;
+    }
+
+    .feed-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .feed-actions button {
+      background: var(--surface-2);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      z-index: 20;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 9px 10px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .bottom-nav button {
+      width: 105px;
+      padding: 9px 6px;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .bottom-nav button.active {
+      background: rgba(232,137,23,.13);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .bottom-nav .nav-icon {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.58);
+    }
+
+    .modal-content {
+      width: min(100%, 560px);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .close-modal {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 20px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 99px;
+      background: rgba(47,158,98,.12);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .badge.pending {
+      background: rgba(232,137,23,.14);
+      color: var(--primary-dark);
+    }
+
+    .badge.rejected {
+      background: rgba(214,69,69,.12);
+      color: var(--danger);
+    }
+
+    @media (max-width: 900px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .content {
+        padding: 18px 14px;
+      }
+
+      .topbar {
+        padding: 10px 14px;
+      }
+
+      .top-brand strong {
+        font-size: 18px;
+      }
+
+      .user-chip {
+        display: none;
+      }
+
+      .grid-4,
+      .grid-3,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 22px;
+      }
+
+      .bottom-nav button {
+        width: 20%;
+        font-size: 10px;
+      }
+
+      .bottom-nav .nav-icon {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand">
+        <img src="logo.png" alt="Logo Sertão Literário">
+        <div>
+          <h1>Sertão Literário</h1>
+          <small>Leitura, comunidade e conquistas</small>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button id="loginTab" class="active">Entrar</button>
+        <button id="registerTab">Criar conta</button>
+      </div>
+
+      <div id="authMessage" class="message hidden"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label>E-mail</label>
+          <input id="loginEmail" type="email" required placeholder="voce@email.com">
+        </div>
+
+        <div class="field">
+          <label>Senha</label>
+          <input id="loginPassword" type="password" required minlength="6">
+        </div>
+
+        <button class="btn btn-primary" type="submit" style="width:100%">
+          Entrar no Sertão Literário
+        </button>
+      </form>
+
+      <form id="registerForm" class="hidden">
+        <div class="field">
+          <label>Nome completo</label>
+          <input id="registerName" required placeholder="Digite seu nome">
+        </div>
+
+        <div class="field">
+          <label>E-mail</label>
+          <input id="registerEmail" type="email" required placeholder="voce@email.com">
+        </div>
+
+        <div class="field">
+          <label>Senha de acesso</label>
+          <input id="registerPassword" type="password" required minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="6 dígitos">
+        </div>
+
+        <div class="field">
+          <label>Perfil</label>
+          <select id="registerRole" required>
+            <option value="aluno">Aluno</option>
+            <option value="professor">Professor</option>
+            <option value="coordenador">Coordenador</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Turma</label>
+          <input id="registerClass" placeholder="Ex.: 6º Ano">
+        </div>
+
+        <div id="securityCodeField" class="field hidden">
+          <label>Código de segurança</label>
+          <input id="securityCode" placeholder="Código do perfil">
+        </div>
+
+        <button class="btn btn-green" type="submit" style="width:100%">
+          Criar minha conta
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="top-brand">
+          <img src="logo.png" alt="Sertão Literário">
+          <strong>Sertão Literário</strong>
+        </div>
+
+        <div class="top-actions">
+          <div id="userChip" class="user-chip"></div>
+          <button id="themeBtn" class="icon-btn" title="Alternar tema">🌙</button>
+          <button id="logoutBtn" class="icon-btn" title="Sair">↪</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section id="page-home"></section>
+      <section id="page-library" class="hidden"></section>
+      <section id="page-store" class="hidden"></section>
+      <section id="page-booktok" class="hidden"></section>
+      <section id="page-profile" class="hidden"></section>
+    </div>
+
+    <nav class="bottom-nav">
+      <button data-page="home" class="active">
+        <span class="nav-icon">🏜️</span>
+        Início
+      </button>
+
+      <button data-page="library">
+        <span class="nav-icon">📚</span>
+        Biblioteca
+      </button>
+
+      <button data-page="store">
+        <span class="nav-icon">🛍️</span>
+        Loja
+      </button>
+
+      <button data-page="booktok">
+        <span class="nav-icon">🎬</span>
+        BookTok
+      </button>
+
+      <button data-page="profile">
+        <span class="nav-icon">👤</span>
+        Perfil
+      </button>
+    </nav>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Formulário</h2>
+        <button id="closeModal" class="close-modal">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      addDoc,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-xVOI6qXkEndKXkSp6-zRLY01qNkQH4E",
+      authDomain: "sertao-literario-booktok.firebaseapp.com",
+      projectId: "sertao-literario-booktok",
+      storageBucket: "sertao-literario-booktok.firebasestorage.app",
+      messagingSenderId: "291651799720",
+      appId: "1:291651799720:web:b5c79954511f09b8ddd09d"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+    const storage = getStorage(firebaseApp);
+
+    let currentUser = null;
+    let currentProfile = null;
+    let activePage = "home";
+    let books = [];
+    let missions = [];
+    let readings = [];
+    let posts = [];
+    let unsubscribeFunctions = [];
+
+    const $ = selector => document.querySelector(selector);
+
+    function showMessage(message) {
+      const box = $("#authMessage");
+      box.textContent = message;
+      box.classList.remove("hidden");
+    }
+
+    function clearMessage() {
+      $("#authMessage").classList.add("hidden");
+    }
+
+    function escapeHtml(value = "") {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function roleLabel(role) {
+      return {
+        aluno: "Aluno",
+        professor: "Professor",
+        coordenador: "Coordenador"
+      }[role] || role;
+    }
+
+    function isStaff() {
+      return ["professor", "coordenador"].includes(currentProfile?.role);
+    }
+
+    function isCoordinator() {
+      return currentProfile?.role === "coordenador";
+    }
+
+    function openModal(title, content) {
+      $("#modalTitle").textContent = title;
+      $("#modalBody").innerHTML = content;
+      $("#modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      $("#modal").classList.add("hidden");
+      $("#modalBody").innerHTML = "";
+    }
+
+    $("#closeModal").addEventListener("click", closeModal);
+
+    $("#loginTab").addEventListener("click", () => {
+      $("#loginTab").classList.add("active");
+      $("#registerTab").classList.remove("active");
+      $("#loginForm").classList.remove("hidden");
+      $("#registerForm").classList.add("hidden");
+      clearMessage();
+    });
+
+    $("#registerTab").addEventListener("click", () => {
+      $("#registerTab").classList.add("active");
+      $("#loginTab").classList.remove("active");
+      $("#registerForm").classList.remove("hidden");
+      $("#loginForm").classList.add("hidden");
+      clearMessage();
+    });
+
+    $("#registerRole").addEventListener("change", event => {
+      const role = event.target.value;
+      const securityField = $("#securityCodeField");
+      const classField = $("#registerClass");
+
+      if (role === "aluno") {
+        securityField.classList.add("hidden");
+        classField.required = true;
+      } else {
+        securityField.classList.remove("hidden");
+        classField.required = false;
+      }
+    });
+
+    $("#loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage();
+
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          $("#loginEmail").value.trim(),
+          $("#loginPassword").value
+        );
+      } catch (error) {
+        showMessage traduzirErro(error);
+      }
+    });
+
+    $("#registerForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage();
+
+      const name = $("#registerName").value.trim();
+      const email = $("#registerEmail").value.trim();
+      const password = $("#registerPassword").value;
+      const role = $("#registerRole").value;
+      const className = $("#registerClass").value.trim();
+      const securityCode = $("#securityCode").value.trim();
+
+      if (password.length !== 6 || !/^\\d{6}$/.test(password)) {
+        showMessage("A senha precisa ter exatamente 6 dígitos.");
+        return;
+      }
+
+      if (role === "professor" && securityCode !== "SERTAO-PROF-2026") {
+        showMessage("Código de segurança do professor inválido.");
+        return;
+      }
+
+      if (role === "coordenador" && securityCode !== "SERTAO-COORD-2026") {
+        showMessage("Código master do coordenador inválido.");
+        return;
+      }
+
+      try {
+        const credentials = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const profile = {
+          uid: credentials.user.uid,
+          name,
+          email,
+          role,
+          className: role === "aluno" ? className : "",
+          xp: 0,
+          cactoscoins: 0,
+          level: 1,
+          createdAt: serverTimestamp()
+        };
+
+        await setDoc(doc(db, "users", credentials.user.uid), profile);
+      } catch (error) {
+        showMessage(traduzirErro(error));
+      }
+    });
+
+    function traduzirErro(error) {
+      const code = error?.code || "";
+
+      const errors = {
+        "auth/invalid-email": "O e-mail informado é inválido.",
+        "auth/email-already-in-use": "Este e-mail já está cadastrado.",
+        "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
+        "auth/invalid-credential": "E-mail ou senha incorretos.",
+        "auth/user-not-found": "Usuário não encontrado.",
+        "auth/wrong-password": "Senha incorreta."
+      };
+
+      return errors[code] || "Não foi possível concluir a operação.";
+    }
+
+    $("#logoutBtn").addEventListener("click", () => signOut(auth));
+
+    $("#themeBtn").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem(
+        "sertao-theme",
+        document.body.classList.contains("dark") ? "dark" : "light"
+      );
+      $("#themeBtn").textContent =
+        document.body.classList.contains("dark") ? "☀️" : "🌙";
+    });
+
+    if (localStorage.getItem("sertao-theme") === "dark") {
+      document.body.classList.add("dark");
+      $("#themeBtn").textContent = "☀️";
+    }
+
+    document.querySelectorAll(".bottom-nav button").forEach(button => {
+      button.addEventListener("click", () => {
+        activePage = button.dataset.page;
+
+        document.querySelectorAll(".bottom-nav button")
+          .forEach(item => item.classList.remove("active"));
+
+        button.classList.add("active");
+
+        document.querySelectorAll("[id^='page-']")
+          .forEach(page => page.classList.add("hidden"));
+
+        $(`#page-${activePage}`).classList.remove("hidden");
+        renderPage(activePage);
+      });
+    });
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        currentUser = null;
+        currentProfile = null;
+        $("#authScreen").classList.remove("hidden");
+        $("#app").classList.add("hidden");
+        unsubscribeFunctions.forEach(fn => fn());
+        unsubscribeFunctions = [];
+        return;
+      }
+
+      currentUser = user;
+
+      const profileSnap = await getDoc(doc(db, "users", user.uid));
+
+      if (!profileSnap.exists()) {
+        await signOut(auth);
+        showMessage("Perfil do usuário não encontrado.");
+        return;
+      }
+
+      currentProfile = profileSnap.data();
+
+      $("#authScreen").classList.add("hidden");
+      $("#app").classList.remove("hidden");
+      $("#userChip").textContent =
+        `{roleLabel(currentProfile.role)}`;
+
+      subscribeToData();
+      renderPage("home");
+    });
+
+    function subscribeToData() {
+      unsubscribeFunctions.forEach(fn => fn());
+      unsubscribeFunctions = [];
+
+      const booksQuery = query(
+        collection(db, "books"),
+        orderBy("title")
+      );
+
+      const missionsQuery = query(
+        collection(db, "missions"),
+        orderBy("createdAt", "desc")
+      );
+
+      const readingsQuery = query(
+        collection(db, "readings"),
+        orderBy("createdAt", "desc")
+      );
+
+      const postsQuery = query(
+        collection(db, "posts"),
+        orderBy("createdAt", "desc")
+      );
+
+      unsubscribeFunctions.push(
+        onSnapshot(booksQuery, snapshot => {
+          books = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+          renderPage(activePage);
+        })
+      );
+
+      unsubscribeFunctions.push(
+        onSnapshot(missionsQuery, snapshot => {
+          missions = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+          renderPage(activePage);
+        })
+      );
+
+      unsubscribeFunctions.push(
+        onSnapshot(readingsQuery, snapshot => {
+          readings = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+          renderPage(activePage);
+        })
+      );
+
+      unsubscribeFunctions.push(
+        onSnapshot(postsQuery, snapshot => {
+          posts = snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
+          renderPage(activePage);
+        })
+      );
+    }
+
+    function renderPage(page) {
+      if (!currentProfile) return;
+
+      if (page === "home") renderHome();
+      if (page === "library") renderLibrary();
+      if (page === "store") renderStore();
+      if (page === "booktok") renderBookTok();
+      if (page === "profile") renderProfile();
+    }
+
+    function renderHome() {
+      const isAluno = currentProfile.role === "aluno";
+
+      const userReadings = readings.filter(item =>
+        isAluno ? item.userId === currentUser.uid : true
+      );
+
+      const approvedReadings = userReadings.filter(
+        item => item.status === "approved"
+      );
+
+      const totalBooks = approvedReadings.length;
+      const target = currentProfile.goalBimester || 10;
+      const progress = Math.min((totalBooks / target) * 100, 100);
+
+      const activeMissions = missions.filter(item => item.active !== false);
+
+      $("#page-home").innerHTML = `
+        <section class="hero">
+          <h1>{escapeHtml(currentProfile.name)}!` : `Painel do ${roleLabel(currentProfile.role)}`}</h1>
+          <p>
+            ${isAluno
+              ? "Sua próxima grande aventura pode começar em qualquer página."
+              : "Acompanhe o desenvolvimento leitor da sua comunidade escolar."}
+          </p>
+        </section>
+
+        <div class="section-title">
+          <h2>Visão geral</h2>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="card stat-card">
+            <div class="emoji">🌵</div>
+            <strong>${currentProfile.cactoscoins || 0}</strong>
+            <span>Cactoscoins</span>
+          </div>
+
+          <div class="card stat-card">
+            <div class="emoji">⚡</div>
+            <strong>${currentProfile.xp || 0}</strong>
+            <span>XP acumulado</span>
+          </div>
+
+          <div class="card stat-card">
+            <div class="emoji">🏆</div>
+            <strong>${currentProfile.level || 1}</strong>
+            <span>Nível atual</span>
+          </div>
+
+          <div class="card stat-card">
+            <div class="emoji">📚</div>
+            <strong>${totalBooks}</strong>
+            <span>Livros aprovados</span>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <h2>${isAluno ? "Minha meta bimestral" : "Engajamento leitor"}</h2>
+        </div>
+
+        <div class="card">
+          <strong>{totalBooks} de {approvedReadings.length} leituras registradas`}</strong>
+          <div class="progress-line">
+            <span style="width:${progress}%"></span>
+          </div>
+          <small style="color:var(--muted)">
+            {Math.round(progress)}% concluído` : "Dados atualizados em tempo real"}
+          </small>
+        </div>
+
+        <div class="section-title">
+          <h2>Desafios ativos</h2>
+          ${isStaff() ? `<button class="btn btn-primary" id="newMissionBtn">+ Criar desafio</button>` : ""}
+        </div>
+
+        <div class="grid grid-3">
+          ${
+            activeMissions.length
+              ? activeMissions.slice(0, 6).map(renderMissionCard).join("")
+              : `<div class="empty">Nenhum desafio ativo no momento.</div>`
+          }
+        </div>
+
+        ${
+          isStaff()
+            ? `
+              <div class="section-title">
+                <h2>Leituras aguardando aprovação</h2>
+              </div>
+
+              <div class="grid grid-2">
+                ${
+                  readings.filter(item => item.status === "pending").length
+                    ? readings
+                      .filter(item => item.status === "pending")
+                      .slice(0, 8)
+                      .map(renderReadingApprovalCard)
+                      .join("")
+                    : `<div class="empty">Não há leituras aguardando aprovação.</div>`
                 }
+              </div>
+            `
+            : ""
+        }
+      `;
+
+      $("#newMissionBtn")?.addEventListener("click", openMissionModal);
+
+      document.querySelectorAll("[data-approve-reading]")
+        .forEach(button => {
+          button.addEventListener("click", () =>
+            updateReadingStatus(button.dataset.approveReading, "approved")
+          );
+        });
+
+      document.querySelectorAll("[data-reject-reading]")
+        .forEach(button => {
+          button.addEventListener("click", () =>
+            updateReadingStatus(button.dataset.rejectReading, "rejected")
+          );
+        });
+    }
+
+    function renderMissionCard(mission) {
+      return `
+        <div class="card mission-card">
+          <span class="badge">${mission.type || "Desafio"}</span>
+          <h3 style="margin-top:10px">${escapeHtml(mission.title)}</h3>
+          <p style="color:var(--muted);line-height:1.5">
+            ${escapeHtml(mission.description || "")}
+          </p>
+          <strong style="color:var(--primary)">
+            +{mission.rewardXp || 0} XP
+          </strong>
+        </div>
+      `;
+    }
+
+    function renderReadingApprovalCard(reading) {
+      return `
+        <div class="card">
+          <span class="badge pending">Aguardando aprovação</span>
+          <h3 style="margin-top:10px">${escapeHtml(reading.bookTitle)}</h3>
+          <p style="color:var(--muted)">
+            Aluno: ${escapeHtml(reading.userName || "Usuário")}
+          </p>
+          <p>
+            {escapeHtml(reading.date || "")}
+          </p>
+
+          <div class="book-actions">
+            <button class="btn btn-green" data-approve-reading="${reading.id}">
+              Aprovar
+            </button>
+            <button class="btn btn-danger" data-reject-reading="${reading.id}">
+              Rejeitar
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function updateReadingStatus(readingId, status) {
+      const reading = readings.find(item => item.id === readingId);
+      if (!reading) return;
+
+      await updateDoc(doc(db, "readings", readingId), {
+        status,
+        reviewedBy: currentUser.uid,
+        reviewedAt: serverTimestamp()
+      });
+
+      if (status === "approved") {
+        const studentRef = doc(db, "users", reading.userId);
+        const studentSnap = await getDoc(studentRef);
+
+        if (studentSnap.exists()) {
+          const student = studentSnap.data();
+
+          await updateDoc(studentRef, {
+            xp: (student.xp || 0) + 25,
+            cactoscoins: (student.cactoscoins || 0) + 10,
+            level: Math.floor(((student.xp || 0) + 25) / 100) + 1
+          });
+        }
+      }
+    }
+
+    function renderLibrary() {
+      $("#page-library").innerHTML = `
+        <div class="section-title">
+          <h2>Biblioteca</h2>
+          ${
+            isStaff()
+              ? `<button class="btn btn-primary" id="newBookBtn">+ Adicionar livro</button>`
+              : `<button class="btn btn-green" id="newReadingBtn">+ Registrar leitura</button>`
+          }
+        </div>
+
+        <div class="grid grid-3">
+          ${
+            books.length
+              ? books.map(renderBookCard).join("")
+              : `<div class="empty">Nenhum livro cadastrado ainda.</div>`
+          }
+        </div>
+      `;
+
+      $("#newBookBtn")?.addEventListener("click", openBookModal);
+      $("#newReadingBtn")?.addEventListener("click", openReadingModal);
+    }
+
+    function renderBookCard(book) {
+      return `
+        <div class="card book-card">
+          <img class="book-cover"
+            src="${escapeHtml(book.coverUrl || "https://placehold.co/600x800/e88917/ffffff?text=Livro")}"
+            alt="Capa de ${escapeHtml(book.title)}">
+
+          <div>
+            <h3>${escapeHtml(book.title)}</h3>
+            <div class="book-meta">
+              ${escapeHtml(book.author || "Autor não informado")}
+            </div>
+            <div class="book-meta">
+              ${book.pages || 0} páginas
+            </div>
+          </div>
+
+          <div class="book-actions">
+            ${
+              book.pdfUrl
+                ? `<a class="btn btn-ghost" target="_blank" href="${escapeHtml(book.pdfUrl)}">Abrir PDF</a>`
+                : ""
             }
-        }
-    
 
-    
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-
-        .dark .glass { background: rgba(15, 23, 42, 0.8); }
-
-        .cordel-border { border: 4px solid currentColor; border-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm2 2v36h36V2H2z' fill='%23000' fill-rule='evenodd'/%3E%3C/svg%3E") 10; }
-
-        .gradient-text { background: linear-gradient(to right, #F59E0B, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        .card-hover { transition: all 0.3s ease; }
-
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-
-        .tab-active { border-bottom: 3px solid #F59E0B; color: #F59E0B; }
-
-        html { scroll-behavior: smooth; }
-    
-
-    
-    
-        
-            
-                
-                    
-                        **
-                    
-                    SERTÃO LITERÁRIO
-                
-                
-                    Conceito
-                    Perfis
-                    Gamificação
-                    App
-                
-                
-                    
-                        **
-                    
-                    
-                        Entrar
-                    
-                
-            
-        
-    
-
-    
-    
-        
-            
-                🌵 O Sertão vai virar mar de livros
-            
-            # 
-                Onde a leitura vira jornada e o 
-
-                sertão vira palco
-            
-
-            
-                Leitura, comunidade e conquistas para formar leitores. Uma plataforma gamificada que une a tradição do cordel com a energia do BookTok.
-            
-
-            
-                
-                    Começar Jornada **
-                
-                
-                    Ver Demonstração
-                
-            
-        
-    
-
-    
-    
-        
-            
-                
-                    ## O Conceito Central
-
-                    
-                        O Sertão Literário transforma a leitura obrigatória em uma jornada viciante. Unimos a estética rica da cultura nordestina com dinâmicas modernas de redes sociais para criar um ecossistema onde ler é ganhar status, XP e recompensas.
-                    
-
-                
-                
-                    
-                        **
-                        ### Gamificação
-
-                        XP, níveis e moedas virtuais.
-
-                    
-                    
-                        **
-                        ### Cultura
-
-                        Cordel, cactos e identidade.
-
-                    
-                    
-                        **
-                        ### BookTok
-
-                        Resenhas em vídeo e interação.
-
-                    
-                    
-                        **
-                        ### Leitura
-
-                        Acompanhamento e metas reais.
-
-                    
-                
-            
-        
-    
-
-    
-    
-        
-            ## Três Perfis, Uma Missão
-
-            
-            
-                Aluno
-                Professor
-                Coordenador
-            
-
-            
-                
-                    ### O Protagonista
-
-                    O aluno percorre uma jornada individual acumulando **Cactoscoins** e **XP**. Ele define metas, cumpre missões e compartilha sua paixão no BookTok.
-
-                    
-                        ** Registro de leituras com fotos
-
-                        • ** Loja de customização de perfil
-
-                        • ** Ranking da turma e desafios diários
-
-                    
-                
-                
-                    **
-                
-            
-
-            
-                
-                    ### O Curador
-
-                    O professor gerencia múltiplas turmas, lança desafios literários e atua como o mentor da jornada, aprovando as leituras e alimentando a biblioteca.
-
-                    
-                        • ** Curadoria de livros em PDF
-
-                        • ** Lançamento de campanhas e missões
-
-                        • ** Aprovação de resenhas e vídeos
-
-                    
-                
-                
-                    **
-                
-            
-
-            
-                
-                    ### O Administrador
-
-                    Com visão global da escola, o coordenador monitora o engajamento, gera relatórios analíticos e garante a moderação de todo o ambiente.
-
-                    
-                        • ** Gráficos de acesso e movimentação
-
-                        • ** Exportação de relatórios em PDF/XLS
-
-                        • ** Gestão total de usuários e conteúdo
-
-                    
-                
-                
-                    **
-                
-            
-        
-    
-
-    
-    
-        
-            
-                ## A Alma do App: Gamificação
-
-                Transformando esforço em reconhecimento e diversão.
-
-            
-            
-                
-                    
-                        **
-                    
-                    ### Cactoscoins 🌵
-
-                    A moeda virtual do sertão. Ganhe ao ler, resenhar e participar de desafios.
-
-                
-                
-                    
-                        **
-                    
-                    ### XP e Níveis
-
-                    Suba de nível e desbloqueie novos status na comunidade leitora.
-
-                
-                
-                    
-                        **
-                    
-                    ### Loja Literária
-
-                    Troque suas moedas por temas, avatares e molduras exclusivas.
-
-                
-            
-        
-    
-
-    
-    
-        
-            ## Navegação Intuitiva
-
-            
-                
-                    **
-                    Home
-                
-                
-                    **
-                    Biblioteca
-                
-                
-                    **
-                    Loja
-                
-                
-                    **
-                    BookTok
-                
-                
-                    **
-                    Perfil
-                
-            
-        
-    
-
-    
-    
-        
-            
-                
-                    **
-                
-                SERTÃO LITERÁRIO
-            
-            "Leitura, comunidade e conquistas para formar leitores."
-
-            &copy; 2026 Sertão Literário. Todos os direitos reservados.
-
-        
-    
-
-    
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            if (document.documentElement.classList.contains('dark')) {
-                icon.classList.replace('fa-moon', 'fa-sun');
-            } else {
-                icon.classList.replace('fa-sun', 'fa-moon');
+            ${
+              currentProfile.role === "aluno"
+                ? `<button class="btn btn-green" data-read-book="${book.id}">Ler este livro</button>`
+                : ""
             }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStore() {
+      const themes = [
+        {
+          title: "Tema Sertão",
+          description: "Cores do sol, cactos e paisagens nordestinas.",
+          cost: 50,
+          emoji: "🏜️"
+        },
+        {
+          title: "Tema Cordel",
+          description: "Visual inspirado na literatura de cordel.",
+          cost: 80,
+          emoji: "📜"
+        },
+        {
+          title: "Tema Neon",
+          description: "Uma experiência vibrante para o BookTok.",
+          cost: 120,
+          emoji: "✨"
+        }
+      ];
+
+      $("#page-store").innerHTML = `
+        <div class="section-title">
+          <h2>Loja Literária</h2>
+        </div>
+
+        ${
+          isStaff()
+            ? `<div class="card">
+                <span class="badge">Área administrativa</span>
+                <h3 style="margin-top:10px">Itens para os alunos</h3>
+                <p style="color:var(--muted)">
+                  Professores e coordenadores podem administrar campanhas,
+                  temas e recompensas sem gastar Cactoscoins.
+                </p>
+              </div>`
+            : ""
         }
 
-        function switchTab(profile) {
-            const tabs = ['aluno', 'professor', 'coordenador'];
-            tabs.forEach(t => {
-                document.getElementById(`content-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).classList.remove('tab-active', 'text-sertao-amber', 'text-sertao-green', 'text-sertao-cyan');
-                document.getElementById(`tab-${t}`).classList.add('text-slate-500');
-            });
+        <div class="grid grid-3" style="margin-top:16px">
+          ${
+            themes.map(theme => `
+              <div class="card">
+                <div style="font-size:42px">${theme.emoji}</div>
+                <h3>${theme.title}</h3>
+                <p style="color:var(--muted)">${theme.description}</p>
+                <strong style="color:var(--primary)">
+                  ${theme.cost} 🌵
+                </strong>
+                <div style="margin-top:14px">
+                  ${
+                    currentProfile.role === "aluno"
+                      ? `<button class="btn btn-primary" data-buy-theme="{theme.cost}">
+                          Comprar tema
+                        </button>`
+                      : `<span class="badge">Disponível para gestão</span>`
+                  }
+                </div>
+              </div>
+            `).join("")
+          }
+        </div>
+      `;
 
-            const activeTab = document.getElementById(`tab-${profile}`);
-            const activeContent = document.getElementById(`content-${profile}`);
-            
-            activeContent.classList.remove('hidden');
-            activeTab.classList.add('tab-active');
-            activeTab.classList.remove('text-slate-500');
-            
-            if(profile === 'aluno') activeTab.classList.add('text-sertao-amber');
-            if(profile === 'professor') activeTab.classList.add('text-sertao-green');
-            if(profile === 'coordenador') activeTab.classList.add('text-sertao-cyan');
-        }
-    
+      document.querySelectorAll("[data-buy-theme]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const cost = Number(button.dataset.cost);
+
+          if ((currentProfile.cactoscoins || 0) < cost) {
+            alert("Você ainda não possui Cactoscoins suficientes.");
+            return;
+          }
+
+          await updateDoc(doc(db, "users", currentUser.uid), {
+            cactoscoins: currentProfile.cactoscoins - cost,
+            selectedTheme: button.dataset.buyTheme
+          });
+
+          currentProfile.cactoscoins -= cost;
+          alert("Tema adquirido com sucesso.");
+          renderPage("store");
+        });
+      });
+    }
+
+    function renderBookTok() {
+      $("#page-booktok").innerHTML = `
+        <div class="section-title">
+          <h2>BookTok</h2>
+          <button class="btn btn-primary" id="newPostBtn">+ Publicar resenha</button>
+        </div>
+
+        <div class="grid grid-2">
+          ${
+            posts.length
+              ? posts.map(renderPostCard).join("")
+              : `<div class="empty">Ainda não existem publicações.</div>`
+          }
+        </div>
+      `;
+
+      $("#newPostBtn").addEventListener("click", openPostModal);
+    }
+
+    function renderPostCard(post) {
+      return `
+        <article class="card feed-card">
+          <div class="feed-header">
+            <div class="avatar">${escapeHtml((post.userName || "U").charAt(0).toUpperCase())}</div>
+            <div>
+              <strong>${escapeHtml(post.userName || "Usuário")}</strong>
+              <div 
