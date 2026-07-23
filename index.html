@@ -916,56 +916,77 @@
     });
 
     $("#registerForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      clearMessage();
+  event.preventDefault();
+  clearMessage();
 
-      const name = $("#registerName").value.trim();
-      const email = $("#registerEmail").value.trim();
-      const password = $("#registerPassword").value;
-      const role = $("#registerRole").value;
-      const className = $("#registerClass").value.trim();
-      const securityCode = $("#securityCode").value.trim();
+  const name = $("#registerName").value.trim();
+  const email = $("#registerEmail").value.trim();
+  const password = $("#registerPassword").value.trim();
+  const role = $("#registerRole").value;
+  const className = $("#registerClass").value.trim();
+  const securityCode = $("#securityCode").value.trim();
 
-      if (password.length !== 6 || !/^\\d{6}$/.test(password)) {
-        showMessage("A senha precisa ter exatamente 6 dígitos.");
-        return;
-      }
+  if (!name || !email || !password || !role) {
+    showMessage("Preencha todos os campos obrigatórios.");
+    return;
+  }
 
-      if (role === "professor" && securityCode !== "SERTAO-PROF-2026") {
-        showMessage("Código de segurança do professor inválido.");
-        return;
-      }
+  if (!/^\d{6}$/.test(password)) {
+    showMessage("A senha precisa conter exatamente 6 dígitos.");
+    return;
+  }
 
-      if (role === "coordenador" && securityCode !== "SERTAO-COORD-2026") {
-        showMessage("Código master do coordenador inválido.");
-        return;
-      }
+  if (role === "aluno" && !className) {
+    showMessage("Informe a turma do aluno.");
+    return;
+  }
 
-      try {
-        const credentials = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+  if (
+    role === "professor" &&
+    securityCode !== "SERTAO-PROF-2026"
+  ) {
+    showMessage("Código de segurança do professor inválido.");
+    return;
+  }
 
-        const profile = {
-          uid: credentials.user.uid,
-          name,
-          email,
-          role,
-          className: role === "aluno" ? className : "",
-          xp: 0,
-          cactoscoins: 0,
-          level: 1,
-          createdAt: serverTimestamp()
-        };
+  if (
+    role === "coordenador" &&
+    securityCode !== "SERTAO-COORD-2026"
+  ) {
+    showMessage("Código master do coordenador inválido.");
+    return;
+  }
 
-        await setDoc(doc(db, "users", credentials.user.uid), profile);
-      } catch (error) {
-        showMessage(traduzirErro(error));
-      }
-    });
+  try {
+    const credentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
+    const profile = {
+      uid: credentials.user.uid,
+      name,
+      email,
+      role,
+      className: role === "aluno" ? className : "",
+      xp: 0,
+      cactoscoins: 0,
+      level: 1,
+      createdAt: serverTimestamp()
+    };
+
+    await setDoc(
+      doc(db, "users", credentials.user.uid),
+      profile
+    );
+
+    alert("Conta criada com sucesso!");
+  } catch (error) {
+    console.error("Erro ao criar conta:", error);
+    showMessage(traduzirErro(error));
+  }
+});
     function traduzirErro(error) {
       const code = error?.code || "";
 
