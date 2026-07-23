@@ -239,11 +239,7 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    var appEl = document.getElementById("app");
-
-    if (typeof firebase === "undefined") {
-      appEl.innerHTML = '<div class="empty-state" style="margin-top:35vh"><h2 style="color:var(--danger)">Erro de conexão</h2><p style="margin-top:10px;color:var(--muted)">O Firebase não carregou. Verifique sua internet e atualize a página.</p></div>';
-    } else {
+    try {
       firebase.initializeApp({
         apiKey: "AIzaSyA-xVOI6qXkEndKXkSp6-zRLY01qNkQH4E",
         authDomain: "sertao-literario-booktok.firebaseapp.com",
@@ -252,379 +248,364 @@
         messagingSenderId: "291651799720",
         appId: "1:291651799720:web:b5c79954511f09b8ddd09d"
       });
+    } catch(e) {
+      document.getElementById("app").innerHTML = '<div class="empty-state" style="margin-top:35vh">Erro ao conectar com Firebase. Verifique sua conexão.</div>';
+    }
 
-      var auth = firebase.auth();
-      var db = firebase.firestore();
-      var storage = firebase.storage();
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
-      var PROFESSOR_CODE = "SERTAO-PROF-2026";
-      var COORDINATOR_CODE = "SERTAO-COORD-2026";
-      var CLASS_OPTIONS = ["5º Ano", "6º Ano", "7º Ano", "8º Ano", "9º Ano", "1º EM", "2º EM", "3º EM"];
+    const PROFESSOR_CODE = "SERTAO-PROF-2026";
+    const COORDINATOR_CODE = "SERTAO-COORD-2026";
+    const CLASS_OPTIONS = ["5º Ano", "6º Ano", "7º Ano", "8º Ano", "9º Ano", "1º EM", "2º EM", "3º EM"];
 
-      var currentUser = null;
-      var currentProfile = null;
-      var currentPage = "home";
-      var currentTheme = localStorage.getItem("st-theme") || "light";
-      var appLogoUrl = localStorage.getItem("st-logo") || "";
-      var authResolved = false;
+    let currentUser = null;
+    let currentProfile = null;
+    let currentPage = "home";
+    let currentTheme = localStorage.getItem("st-theme") || "light";
+    let appLogoUrl = localStorage.getItem("st-logo") || "";
 
-      document.body.classList.toggle("dark", currentTheme === "dark");
+    document.body.classList.toggle("dark", currentTheme === "dark");
 
-      function $(s) { return document.querySelector(s); }
-      function $$(s) { return document.querySelectorAll(s); }
+    function $(s) { return document.querySelector(s); }
+    function $$(s) { return document.querySelectorAll(s); }
 
-      function toast(msg, type) {
-        type = type || "";
-        var t = $("#toast");
-        t.textContent = msg;
-        t.className = "toast show " + type;
-        setTimeout(function() { t.className = "toast"; }, 3500);
+    function toast(msg, type) {
+      type = type || "";
+      var t = $("#toast");
+      t.textContent = msg;
+      t.className = "toast show " + type;
+      setTimeout(function() { t.className = "toast"; }, 3500);
+    }
+
+    function initials(name) {
+      return (name || "SL").split(" ").slice(0, 2).map(function(w) { return w[0]; }).join("").toUpperCase();
+    }
+
+    function roleLabel(r) {
+      return { student: "Aluno", teacher: "Professor", coordinator: "Coordenador" }[r] || "Usuário";
+    }
+
+    function openModal(title, body) {
+      $("#modalTitle").textContent = title;
+      $("#modalBody").innerHTML = body;
+      $("#modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      $("#modal").classList.add("hidden");
+    }
+
+    function pageTitle(title, desc, extra) {
+      extra = extra || "";
+      return '<div class="page-title"><div><h1>' + title + '</h1><p>' + desc + '</p></div>' + extra + '</div>';
+    }
+
+    function statCard(icon, label, value) {
+      return '<div class="stat-card"><div class="stat-icon">' + icon + '</div><div class="stat-label">' + label + '</div><div class="stat-value">' + value + '</div></div>';
+    }
+
+    function avatarHtml(url, name, size) {
+      size = size || 34;
+      if (url) return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px"><img src="' + url + '" alt="Foto" /></div>';
+      return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size/2.4) + 'px">' + initials(name) + '</div>';
+    }
+
+    function brandHtml() {
+      if (appLogoUrl) return '<div class="brand-logo"><img src="' + appLogoUrl + '" alt="Logo" /></div>';
+      return '<div class="brand-logo-placeholder">🌵</div>';
+    }
+
+    function classDisplay(profile) {
+      if (profile.role === "coordinator") return "Todas as turmas";
+      if (profile.role === "teacher" && profile.classes && profile.classes.length) return profile.classes.join(", ");
+      return profile.className || "Sem turma";
+    }
+
+    function renderApp() {
+      var p = currentProfile;
+      if (!p) return;
+      var icons = ["🏠","📚","🛍️","🎬","👤"];
+      var labels = ["Home","Biblioteca","Loja","BookTok","Perfil"];
+      var pages = ["home","library","store","booktok","profile"];
+
+      var navHtml = "";
+      for (var i = 0; i &lt; pages.length; i++) {
+        navHtml += '<button class="nav-btn' + (pages[i] === currentPage ? ' active' : '') + '" data-page="' + pages[i] + '"><span>' + icons[i] + '</span><span>' + labels[i] + '</span></button>';
       }
 
-      function initials(name) {
-        return (name || "SL").split(" ").slice(0, 2).map(function(w) { return w[0]; }).join("").toUpperCase();
-      }
+      document.getElementById("app").innerHTML =
+        '<div class="app-shell">' +
+          '<header class="topbar">' +
+            '<div class="brand">' + brandHtml() + '<span class="brand-text">Sertão Literário</span></div>' +
+            '<div class="top-actions">' +
+              '<button id="themeBtn" class="icon-btn">' + (currentTheme === "dark" ? "☀" : "☾") + '</button>' +
+              '<div class="user-pill">' + avatarHtml(p.photoUrl, p.name) + '<span>' + (p.name ? p.name.split(" ")[0] : "") + '</span></div>' +
+              '<button id="logoutBtn" class="secondary-btn">Sair</button>' +
+            '</div>' +
+          '</header>' +
+          '<main id="pageContent" class="page"></main>' +
+          '<nav class="bottom-nav">' + navHtml + '</nav>' +
+        '</div>';
 
-      function roleLabel(r) {
-        return { student: "Aluno", teacher: "Professor", coordinator: "Coordenador" }[r] || "Usuário";
-      }
+      document.getElementById("themeBtn").onclick = function() {
+        currentTheme = currentTheme === "dark" ? "light" : "dark";
+        document.body.classList.toggle("dark", currentTheme === "dark");
+        localStorage.setItem("st-theme", currentTheme);
+        renderApp();
+      };
 
-      function openModal(title, body) {
-        $("#modalTitle").textContent = title;
-        $("#modalBody").innerHTML = body;
-        $("#modal").classList.remove("hidden");
-      }
+      document.getElementById("logoutBtn").onclick = function() {
+        toast("Saindo...");
+        setTimeout(function() { auth.signOut().catch(function(err) { console.error(err); }); }, 300);
+      };
 
-      function closeModal() {
-        $("#modal").classList.add("hidden");
-      }
-
-      function pageTitle(title, desc, extra) {
-        extra = extra || "";
-        return '<div class="page-title"><div><h1>' + title + '</h1><p>' + desc + '</p></div>' + extra + '</div>';
-      }
-
-      function statCard(icon, label, value) {
-        return '<div class="stat-card"><div class="stat-icon">' + icon + '</div><div class="stat-label">' + label + '</div><div class="stat-value">' + value + '</div></div>';
-      }
-
-      function avatarHtml(url, name, size) {
-        size = size || 34;
-        if (url) return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px"><img src="' + url + '" alt="Foto" /></div>';
-        return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size/2.4) + 'px">' + initials(name) + '</div>';
-      }
-
-      function brandHtml() {
-        if (appLogoUrl) return '<div class="brand-logo"><img src="' + appLogoUrl + '" alt="Logo" /></div>';
-        return '<div class="brand-logo-placeholder">🌵</div>';
-      }
-
-      function classDisplay(profile) {
-        if (profile.role === "coordinator") return "Todas as turmas";
-        if (profile.role === "teacher" && profile.classes && profile.classes.length) return profile.classes.join(", ");
-        return profile.className || "Sem turma";
-      }
-
-      function renderApp() {
-        var p = currentProfile;
-        if (!p) return;
-        var icons = ["🏠","📚","🛍️","🎬","👤"];
-        var labels = ["Home","Biblioteca","Loja","BookTok","Perfil"];
-        var pages = ["home","library","store","booktok","profile"];
-
-        var navHtml = "";
-        for (var i = 0; i &lt; pages.length; i++) {
-          navHtml += '<button class="nav-btn' + (pages[i] === currentPage ? ' active' : '') + '" data-page="' + pages[i] + '"><span>' + icons[i] + '</span><span>' + labels[i] + '</span></button>';
-        }
-
-        document.getElementById("app").innerHTML =
-          '<div class="app-shell">' +
-            '<header class="topbar">' +
-              '<div class="brand">' + brandHtml() + '<span class="brand-text">Sertão Literário</span></div>' +
-              '<div class="top-actions">' +
-                '<button id="themeBtn" class="icon-btn">' + (currentTheme === "dark" ? "☀" : "☾") + '</button>' +
-                '<div class="user-pill">' + avatarHtml(p.photoUrl, p.name) + '<span>' + (p.name ? p.name.split(" ")[0] : "") + '</span></div>' +
-                '<button id="logoutBtn" class="secondary-btn">Sair</button>' +
-              '</div>' +
-            '</header>' +
-            '<main id="pageContent" class="page"></main>' +
-            '<nav class="bottom-nav">' + navHtml + '</nav>' +
-          '</div>';
-
-        document.getElementById("themeBtn").onclick = function() {
-          currentTheme = currentTheme === "dark" ? "light" : "dark";
-          document.body.classList.toggle("dark", currentTheme === "dark");
-          localStorage.setItem("st-theme", currentTheme);
+      var navBtns = $$(".nav-btn");
+      for (var i = 0; i &lt; navBtns.length; i++) {
+        navBtns[i].onclick = function() {
+          currentPage = this.dataset.page;
           renderApp();
         };
-
-        document.getElementById("logoutBtn").onclick = function() {
-          toast("Saindo...");
-          setTimeout(function() { auth.signOut().catch(function(err) { console.error(err); }); }, 300);
-        };
-
-        var navBtns = $$(".nav-btn");
-        for (var i = 0; i &lt; navBtns.length; i++) {
-          navBtns[i].onclick = function() {
-            currentPage = this.dataset.page;
-            renderApp();
-          };
-        }
-
-        loadPage();
       }
 
-      function loadPage() {
-        var pages = { home: renderHome, library: renderLibrary, store: renderStore, booktok: renderBookTok, profile: renderProfile };
-        pages[currentPage]();
-      }
+      loadPage();
+    }
 
-      async function renderHome() {
-        var p = currentProfile;
-        var isStu = p.role === "student";
-        var booksRead = p.booksRead || 0;
-        var xp = p.xp || 0;
-        var coins = p.cactoscoins || 0;
-        var level = p.level || 1;
+    function loadPage() {
+      var pages = { home: renderHome, library: renderLibrary, store: renderStore, booktok: renderBookTok, profile: renderProfile };
+      pages[currentPage]();
+    }
 
-        var statsHtml = isStu
-          ? statCard("🌵","Cactoscoins",coins) + statCard("⭐","XP",xp) + statCard("🏅","Nível",level) + statCard("📚","Livros lidos",booksRead)
-          : statCard("👥","Turmas",classDisplay(p)) + statCard("📖","Leituras pendentes","0") + statCard("🎯","Missões ativas","0") + statCard("📈","Engajamento","0%");
+    async function renderHome() {
+      var p = currentProfile;
+      var isStu = p.role === "student";
+      var booksRead = p.booksRead || 0;
+      var xp = p.xp || 0;
+      var coins = p.cactoscoins || 0;
+      var level = p.level || 1;
 
-        $("#pageContent").innerHTML =
-          pageTitle("Olá, " + ((p.name||"").split(" ")[0]||"Leitor") + "!", "Turma: " + classDisplay(p)) +
-          '<div class="stats-grid">' + statsHtml + '</div>' +
-          '<div class="content-grid">' +
-            '<section class="panel"><div class="panel-header"><h2>Metas de leitura</h2></div>' +
-              '<div class="progress-list">' +
-                '<div><div class="progress-info"><span>Meta bimestral</span><strong>' + booksRead + ' de 10</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/10*100,100) + '%"></div></div></div>' +
-                '<div><div class="progress-info"><span>Meta semestral</span><strong>' + booksRead + ' de 30</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/30*100,100) + '%"></div></div></div>' +
-                '<div><div class="progress-info"><span>Meta anual</span><strong>' + booksRead + ' de 60</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/60*100,100) + '%"></div></div></div>' +
-              '</div></section>' +
-            '<section class="panel"><div class="panel-header"><h2>Ranking</h2><span class="tag">Top 5</span></div><div id="rankingContainer"><div class="empty-state">Aguardando dados</div></div></section>' +
-          '</div>' +
-          '<section class="panel section-space"><div class="panel-header"><h2>Missões da turma</h2>' + (isStu ? "" : '<button class="primary-btn" id="newMissionBtn">Criar desafio</button>') + '</div><div id="missionsContainer"><div class="empty-state">Nenhuma missão ativa.</div></div></section>';
+      var statsHtml = isStu
+        ? statCard("🌵","Cactoscoins",coins) + statCard("⭐","XP",xp) + statCard("🏅","Nível",level) + statCard("📚","Livros lidos",booksRead)
+        : statCard("👥","Turmas",classDisplay(p)) + statCard("📖","Leituras pendentes","0") + statCard("🎯","Missões ativas","0") + statCard("📈","Engajamento","0%");
 
-        if (isStu) {
-          try {
-            var q = db.collection("users").where("className","==",p.className).where("role","==","student").orderBy("xp","desc").limit(5);
-            var snap = await q.get();
-            if (!snap.empty) {
-              var users = [];
-              snap.forEach(function(d) { users.push({ id: d.id, ...d.data() }); });
-              $("#rankingContainer").innerHTML = users.map(function(u,i) {
-                return '<div class="ranking-item"><div class="ranking-pos">'+(i+1)+'</div>'+avatarHtml(u.photoUrl,u.name,30)+'<div class="ranking-name">'+u.name+'</div><span class="xp-badge">'+(u.xp||0)+' XP</span></div>';
-              }).join("");
-            }
-          } catch(e) { console.error(e); }
-        }
+      $("#pageContent").innerHTML =
+        pageTitle("Olá, " + ((p.name||"").split(" ")[0]||"Leitor") + "!", "Turma: " + classDisplay(p)) +
+        '<div class="stats-grid">' + statsHtml + '</div>' +
+        '<div class="content-grid">' +
+          '<section class="panel"><div class="panel-header"><h2>Metas de leitura</h2></div>' +
+            '<div class="progress-list">' +
+              '<div><div class="progress-info"><span>Meta bimestral</span><strong>' + booksRead + ' de 10</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/10*100,100) + '%"></div></div></div>' +
+              '<div><div class="progress-info"><span>Meta semestral</span><strong>' + booksRead + ' de 30</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/30*100,100) + '%"></div></div></div>' +
+              '<div><div class="progress-info"><span>Meta anual</span><strong>' + booksRead + ' de 60</strong></div><div class="progress"><div style="width:' + Math.min(booksRead/60*100,100) + '%"></div></div></div>' +
+            '</div></section>' +
+          '<section class="panel"><div class="panel-header"><h2>Ranking</h2><span class="tag">Top 5</span></div><div id="rankingContainer"><div class="empty-state">Aguardando dados</div></div></section>' +
+        '</div>' +
+        '<section class="panel section-space"><div class="panel-header"><h2>Missões da turma</h2>' + (isStu ? "" : '<button class="primary-btn" id="newMissionBtn">Criar desafio</button>') + '</div><div id="missionsContainer"><div class="empty-state">Nenhuma missão ativa.</div></div></section>';
 
-        var newBtn = document.getElementById("newMissionBtn");
-        if (newBtn) newBtn.onclick = showMissionModal;
-        loadMissions();
-      }
-
-      async function loadMissions() {
+      if (isStu) {
         try {
-          var q = db.collection("missions").where("isActive","==",true).orderBy("createdAt","desc").limit(20);
+          var q = db.collection("users").where("className","==",p.className).where("role","==","student").orderBy("xp","desc").limit(5);
           var snap = await q.get();
-          var el = $("#missionsContainer");
-          if (snap.empty) { el.innerHTML = '<div class="empty-state">Nenhuma missão ativa.</div>'; return; }
-          var html = "";
-          snap.forEach(function(d) {
-            var m = d.data();
-            html += '<div class="panel" style="padding:18px;margin-bottom:10px">' +
-              '<div class="flex-between"><strong>' + m.title + '</strong><span class="reward" style="color:var(--primary-dark);font-weight:800">+' + (m.coins||0) + ' 🌵</span></div>' +
-              '<p class="muted" style="margin-top:6px">' + (m.description||"") + '</p>';
-            if (currentProfile.role === "student") html += '<button class="primary-btn" style="margin-top:10px;padding:8px 12px;min-height:auto;font-size:13px" data-mission="' + d.id + '">Concluir missão</button>';
-            html += '</div>';
-          });
-          el.innerHTML = html;
-          var btns = document.querySelectorAll("[data-mission]");
-          for (var i = 0; i &lt; btns.length; i++) btns[i].onclick = function() { toast("Missão enviada para validação!", "success"); };
+          if (!snap.empty) {
+            var users = [];
+            snap.forEach(function(d) { users.push({ id: d.id, ...d.data() }); });
+            $("#rankingContainer").innerHTML = users.map(function(u,i) {
+              return '<div class="ranking-item"><div class="ranking-pos">'+(i+1)+'</div>'+avatarHtml(u.photoUrl,u.name,30)+'<div class="ranking-name">'+u.name+'</div><span class="xp-badge">'+(u.xp||0)+' XP</span></div>';
+            }).join("");
+          }
         } catch(e) { console.error(e); }
       }
 
-      function showMissionModal() {
-        openModal("Criar desafio", '<form id="missionForm" class="form-grid"><label>Título <input name="title" required /></label><label>Descrição <textarea name="description" required></textarea></label><label>Recompensa (Cactoscoins) <input name="coins" type="number" min="1" value="50" /></label><button class="primary-btn full" type="submit">Publicar desafio</button></form>');
-        document.getElementById("missionForm").onsubmit = async function(e) {
-          e.preventDefault();
-          var fd = new FormData(e.target);
-          await db.collection("missions").add({ title: fd.get("title"), description: fd.get("description"), coins: Number(fd.get("coins")), className: currentProfile.role === "teacher" && currentProfile.classes ? currentProfile.classes[0] : (currentProfile.className || "6º Ano"), isActive: true, createdBy: currentUser.uid, createdAt: new Date().toISOString() });
-          closeModal(); toast("Desafio publicado!", "success"); renderHome();
-        };
-      }
-
-      async function renderLibrary() {
-        var books = [];
-        try { var q = db.collection("books").where("isActive","==",true).orderBy("title"); var snap = await q.get(); snap.forEach(function(d) { books.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
-        var isStaff = currentProfile.role !== "student";
-        var booksHtml = books.length ? "" : '<div class="empty-state">Nenhum livro cadastrado.</div>';
-        for (var i = 0; i &lt; books.length; i++) {
-          var b = books[i];
-          booksHtml += '<article class="book-card"><div class="book-cover">📚</div><div class="book-content"><span class="tag">'+(b.category||"Literatura")+'</span><h3>'+b.title+'</h3><p>'+(b.author||"")+' • '+(b.pages||0)+'p</p><div class="book-meta">'+(b.pdfUrl?'<a class="secondary-btn" href="'+b.pdfUrl+'" target="_blank" style="font-size:12px">📄 PDF</a>':'<span class="muted" style="font-size:12px">Sem PDF</span>');
-          if (isStaff) booksHtml += '<button class="danger-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-del="'+b.id+'">Excluir</button>';
-          else if (currentProfile.role === "student") booksHtml += '<button class="primary-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-read="'+b.title.replace(/"/g,"&quot;")+'">Ler</button>';
-          booksHtml += '</div></div></article>';
-        }
-        $("#pageContent").innerHTML = pageTitle("Biblioteca", isStaff ? "Gerencie os livros." : "Descubra leituras.", isStaff ? '<button class="primary-btn" id="addBookBtn">+ Livro</button>' : "") + '<div class="panel"><div class="flex" style="margin-bottom:18px"><input id="searchInput" placeholder="Buscar..." style="flex:1" /></div><div id="booksGrid" class="cards-grid">'+booksHtml+'</div></div>';
-        document.getElementById("searchInput").oninput = function(e) { var t = e.target.value.toLowerCase(); var cards = $$(".book-card"); for (var i = 0; i &lt; cards.length; i++) cards[i].style.display = cards[i].textContent.toLowerCase().indexOf(t) >= 0 ? "" : "none"; };
-        var addBtn = document.getElementById("addBookBtn"); if (addBtn) addBtn.onclick = function() {
-          openModal("Adicionar livro", '<form id="bookForm" class="form-grid"><label>Título <input name="title" required /></label><label>Autor <input name="author" required /></label><label>Páginas <input name="pages" type="number" min="1" /></label><label>Categoria <input name="category" value="Literatura" /></label><label>Link do PDF <input name="pdfUrl" type="url" /></label><button class="primary-btn full" type="submit">Salvar</button></form>');
-          document.getElementById("bookForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("books").add({ title: fd.get("title"), author: fd.get("author"), pages: Number(fd.get("pages")), category: fd.get("category"), pdfUrl: fd.get("pdfUrl"), isActive: true, createdAt: new Date().toISOString() }); closeModal(); toast("Livro adicionado!", "success"); renderLibrary(); };
-        };
-        var delBtns = document.querySelectorAll("[data-del]"); for (var i = 0; i &lt; delBtns.length; i++) delBtns[i].onclick = async function() { if (confirm("Excluir?")) { await db.collection("books").doc(this.dataset.del).delete(); toast("Livro removido."); renderLibrary(); } };
-        var readBtns = document.querySelectorAll("[data-read]"); for (var i = 0; i &lt; readBtns.length; i++) readBtns[i].onclick = function() {
-          var title = this.dataset.read;
-          openModal("Registrar leitura", '<form id="readForm" class="form-grid"><label>Livro <input name="bookTitle" value="'+title.replace(/"/g,"&quot;")+'" readonly /></label><label>Páginas lidas <input name="pages" type="number" min="1" required /></label><label>Data <input name="date" type="date" required /></label><button class="primary-btn full" type="submit">Enviar para aprovação</button></form>');
-          document.getElementById("readForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("readings").add({ userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className, bookTitle: fd.get("bookTitle"), pagesRead: Number(fd.get("pages")), readingDate: fd.get("date"), status: "pending", createdAt: new Date().toISOString() }); closeModal(); toast("Leitura enviada para aprovação!", "success"); };
-        };
-      }
-
-      async function renderStore() {
-        var items = []; try { var snap = await db.collection("storeItems").where("isActive","==",true).get(); snap.forEach(function(d) { items.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
-        var isStu = currentProfile.role === "student"; var coins = currentProfile.cactoscoins || 0;
-        var itemsHtml = items.length ? "" : '<div class="empty-state">Nenhum item disponível.</div>';
-        for (var i = 0; i &lt; items.length; i++) { var it = items[i]; itemsHtml += '<article class="book-card"><div class="book-cover">'+(it.icon||"🎨")+'</div><div class="book-content"><h3>'+it.title+'</h3><p>'+(it.description||"")+'</p><div class="book-meta"><strong>🌵 '+(it.priceCoins||0)+' • ⭐ '+(it.requiredXp||0)+'</strong>'+(isStu?'<button class="primary-btn" data-idx="'+i+'">Comprar</button>':'')+'</div></div></article>'; }
-        $("#pageContent").innerHTML = pageTitle("Loja Literária", isStu ? coins+" Cactoscoins disponíveis" : "Itens para os alunos.") + '<div class="stats-grid" style="margin-bottom:18px">'+statCard("🌵","Saldo",coins)+statCard("⭐","XP",currentProfile.xp||0)+'</div><div class="cards-grid">'+itemsHtml+'</div>';
-        if (isStu) { var buyBtns = document.querySelectorAll("[data-idx]"); for (var i = 0; i &lt; buyBtns.length; i++) buyBtns[i].onclick = (function(idx) { return async function() { var item = items[idx]; if (coins &lt; item.priceCoins) return toast("Cactoscoins insuficientes.", "error"); if ((currentProfile.xp||0) &lt; item.requiredXp) return toast("XP insuficiente.", "error"); try { await db.runTransaction(async function(tx) { var ref = db.collection("users").doc(currentUser.uid); var snap = await tx.get(ref); var u = snap.data(); if ((u.cactoscoins||0) &lt; item.priceCoins) throw new Error("Saldo"); tx.update(ref, { cactoscoins: (u.cactoscoins||0) - item.priceCoins }); tx.set(db.collection("purchases").doc(), { userId: currentUser.uid, itemId: item.id, price: item.priceCoins, createdAt: new Date().toISOString() }); }); toast("Item adquirido!", "success"); setTimeout(function() { renderStore(); }, 500); } catch(e) { toast("Erro na compra.", "error"); } }; })(i); }
-      }
-
-      async function renderBookTok() {
-        var posts = []; try { var q = currentProfile.role === "coordinator" ? db.collection("posts").where("status","==","active").orderBy("createdAt","desc") : db.collection("posts").where("className","==",currentProfile.className).where("status","==","active").orderBy("createdAt","desc"); var snap = await q.get(); snap.forEach(function(d) { posts.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
-        var postsHtml = posts.length ? "" : '<div class="empty-state">Nenhuma publicação ainda.</div>';
-        for (var i = 0; i &lt; posts.length; i++) { var p = posts[i]; postsHtml += '<article class="post-card"><div class="post-video">'+(p.videoUrl?"▶":"📖")+'</div><div class="post-content"><span class="tag">@'+((p.userName||"").toLowerCase().replace(/\s/g,""))+'</span><h3>'+p.title+'</h3><p>'+(p.description||"")+'</p><div class="post-actions"><button class="like-btn" data-id="'+p.id+'">❤️ '+(p.likesCount||0)+'</button><button>💬 '+(p.commentsCount||0)+'</button></div></div></article>'; }
-        $("#pageContent").innerHTML = pageTitle("BookTok", "Compartilhe resenhas.", '<button class="primary-btn" id="newPostBtn">Nova resenha</button>')+'<div class="cards-grid">'+postsHtml+'</div>';
-        document.getElementById("newPostBtn").onclick = function() { openModal("Nova resenha", '<form id="postForm" class="form-grid"><label>Título <input name="title" required /></label><label>Descrição <textarea name="description" required></textarea></label><label>Link do vídeo <input name="videoUrl" type="url" /></label><button class="primary-btn full" type="submit">Publicar</button></form>'); document.getElementById("postForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("posts").add({ title: fd.get("title"), description: fd.get("description"), videoUrl: fd.get("videoUrl"), userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className, likesCount: 0, commentsCount: 0, status: "active", createdAt: new Date().toISOString() }); closeModal(); toast("Resenha publicada!", "success"); renderBookTok(); }; };
-        var likeBtns = document.querySelectorAll(".like-btn"); for (var i = 0; i &lt; likeBtns.length; i++) likeBtns[i].onclick = async function() { await db.collection("posts").doc(this.dataset.id).update({ likesCount: firebase.firestore.FieldValue.increment(1) }); toast("Curtiu!"); renderBookTok(); };
-      }
-
-      function renderProfile() {
-        var p = currentProfile; var isCoord = p.role === "coordinator";
-        var photoSection = '<div class="text-center" style="margin-bottom:20px">'+avatarHtml(p.photoUrl, p.name, 100)+'<div class="file-input-wrapper" style="margin-top:10px"><button class="secondary-btn">Alterar foto</button><input type="file" id="photoInput" accept="image/*" /></div><div id="photoProgress" class="hidden" style="margin-top:8px;color:var(--muted);font-size:13px">Enviando...</div></div>';
-        $("#pageContent").innerHTML = pageTitle("Meu perfil", "Gerencie suas informações.", '<span class="tag" style="font-size:14px">'+roleLabel(p.role)+'</span>') +
-          '<div class="content-grid">' +
-          '<div class="panel"><h2 style="margin-bottom:20px">Informações</h2>'+photoSection+'<div class="form-grid"><label>Nome <input id="editName" value="'+(p.name||"").replace(/"/g,"&quot;")+'" /></label><label>E-mail <input value="'+(p.email||"").replace(/"/g,"&quot;")+'" disabled /></label><label>Turma(s) <input value="'+classDisplay(p).replace(/"/g,"&quot;")+'" disabled /></label><button id="saveBtn" class="primary-btn full">Salvar alterações</button><button id="pwdBtn" class="secondary-btn full">Alterar senha</button>'+(isCoord?'<button id="logoBtn" class="secondary-btn full">Alterar logo do app</button>':'')+'<button id="delBtn" class="danger-btn full">Apagar conta</button></div></div>' +
-          '<div class="panel"><h2 style="margin-bottom:20px">Histórico</h2><div class="progress-list"><div class="ranking-item"><span>📚</span><span class="ranking-name">Livros lidos</span><strong>'+(p.booksRead||0)+'</strong></div><div class="ranking-item"><span>⭐</span><span class="ranking-name">XP</span><strong>'+(p.xp||0)+'</strong></div><div class="ranking-item"><span>🏅</span><span class="ranking-name">Nível</span><strong>'+(p.level||1)+'</strong></div><div class="ranking-item"><span>🌵</span><span class="ranking-name">Cactoscoins</span><strong>'+(p.cactoscoins||0)+'</strong></div></div></div></div>';
-
-        document.getElementById("photoInput").onchange = async function(e) { var file = e.target.files[0]; if (!file) return; var prog = document.getElementById("photoProgress"); prog.classList.remove("hidden"); prog.textContent = "Enviando foto..."; try { var path = "profile-photos/"+currentUser.uid+"/"+Date.now()+"-"+file.name; var ref = storage.ref(path); await ref.put(file); var url = await ref.getDownloadURL(); await db.collection("users").doc(currentUser.uid).update({ photoUrl: url }); currentProfile.photoUrl = url; toast("Foto atualizada!", "success"); renderProfile(); } catch(err) { toast("Erro ao enviar foto.", "error"); console.error(err); prog.classList.add("hidden"); } };
-        document.getElementById("saveBtn").onclick = async function() { var name = document.getElementById("editName").value.trim(); if (!name) return toast("Informe seu nome.", "error"); await db.collection("users").doc(currentUser.uid).update({ name: name }); currentProfile.name = name; toast("Perfil atualizado!", "success"); renderApp(); };
-        document.getElementById("pwdBtn").onclick = async function() { var current = prompt("Senha atual:"); if (!current) return; var newPwd = prompt("Nova senha (6+):"); if (!newPwd || newPwd.length &lt; 6) return toast("Nova senha inválida.", "error"); try { var cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, current); await auth.currentUser.reauthenticateWithCredential(cred); await auth.currentUser.updatePassword(newPwd); toast("Senha alterada!", "success"); } catch(e) { toast("Senha atual incorreta.", "error"); } };
-        var logoBtn = document.getElementById("logoBtn"); if (logoBtn) logoBtn.onclick = function() { openModal("Alterar logo do app", '<div class="form-grid"><p style="color:var(--muted)">Selecione a imagem da logo.</p><div class="file-input-wrapper"><button class="secondary-btn full">Escolher arquivo</button><input type="file" id="logoInput" accept="image/*" /></div><div id="logoPreview" class="hidden text-center" style="margin-top:10px"></div><div id="logoProgress" class="hidden" style="color:var(--muted);font-size:13px;text-align:center">Enviando logo...</div></div>'); document.getElementById("logoInput").onchange = async function(e) { var file = e.target.files[0]; if (!file) return; document.getElementById("logoPreview").innerHTML = '<img src="'+URL.createObjectURL(file)+'" style="max-width:200px;border-radius:12px;border:2px solid var(--primary)" />'; document.getElementById("logoPreview").classList.remove("hidden"); document.getElementById("logoProgress").classList.remove("hidden"); try { var path = "app-settings/logo/"+Date.now()+"-"+file.name; var ref = storage.ref(path); await ref.put(file); var url = await ref.getDownloadURL(); await db.collection("settings").doc("appearance").set({ logoUrl: url }, { merge: true }); appLogoUrl = url; localStorage.setItem("st-logo", url); closeModal(); toast("Logo atualizada!", "success"); setTimeout(function() { renderApp(); }, 500); } catch(err) { toast("Erro ao enviar logo.", "error"); console.error(err); document.getElementById("logoProgress").classList.add("hidden"); } }; };
-        document.getElementById("delBtn").onclick = async function() { var c = prompt('Digite CONFIRMAR para excluir sua conta:'); if (c !== "CONFIRMAR") return; var pwd = prompt("Sua senha atual:"); if (!pwd) return; try { var cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, pwd); await auth.currentUser.reauthenticateWithCredential(cred); await db.collection("users").doc(currentUser.uid).delete(); await auth.currentUser.delete(); toast("Conta excluída."); } catch(e) { toast("Senha incorreta.", "error"); } };
-      }
-
-      var isRegister = false;
-
-      function renderAuth() {
-        document.getElementById("app").innerHTML =
-          '<div class="auth-layout">' +
-            '<div class="auth-hero"><div class="brand">'+brandHtml()+'<span class="brand-text">Sertão Literário</span></div><div class="auth-hero-content"><h1>A leitura virou jornada.</h1><p>Uma experiência literária gamificada. Leia, conquiste, compartilhe.</p></div></div>' +
-            '<div class="auth-panel"><div class="auth-card"><h2 id="authTitle">Entrar na jornada</h2><p id="authDesc">Acesse seu painel de leitura.</p>' +
-            '<div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabReg">Criar conta</button></div>' +
-            '<form id="authForm" class="form-grid">' +
-            '<div id="nameField" class="hidden"><label>Nome <input id="inpName" type="text" /></label></div>' +
-            '<label>E-mail <input id="inpEmail" type="email" required /></label>' +
-            '<div id="roleField" class="hidden"><label>Perfil <select id="inpRole"><option value="student">Aluno</option><option value="teacher">Professor</option><option value="coordinator">Coordenador</option></select></label></div>' +
-            '<div id="classField" class="hidden"><label>Turma(s) — selecione as que você leciona ou estuda</label><div id="classCheckboxes" class="checkbox-group">'+CLASS_OPTIONS.map(function(c){return '<label><input type="checkbox" value="'+c+'" /> '+c+'</label>';}).join("")+'</div></div>' +
-            '<div id="codeField" class="hidden"><label>Código de segurança <input id="inpCode" type="password" placeholder="Código institucional" /></label></div>' +
-            '<label>Senha (6+ dígitos) <input id="inpPwd" type="password" minlength="6" required /></label>' +
-            '<button class="primary-btn full" type="submit" id="authBtn">Entrar</button></form></div></div></div>';
-        document.getElementById("tabLogin").onclick = function() { setMode(false); };
-        document.getElementById("tabReg").onclick = function() { setMode(true); };
-        document.getElementById("inpRole").onchange = function() { toggleFields(); };
-        document.getElementById("authForm").onsubmit = handleAuth;
-        setMode(false);
-      }
-
-      function setMode(reg) {
-        isRegister = reg;
-        document.getElementById("tabLogin").classList.toggle("active", !reg);
-        document.getElementById("tabReg").classList.toggle("active", reg);
-        document.getElementById("nameField").classList.toggle("hidden", !reg);
-        document.getElementById("roleField").classList.toggle("hidden", !reg);
-        if (!reg) { document.getElementById("classField").classList.add("hidden"); document.getElementById("codeField").classList.add("hidden"); }
-        document.getElementById("authTitle").textContent = reg ? "Crie sua jornada" : "Entrar na jornada";
-        document.getElementById("authDesc").textContent = reg ? "Escolha seu perfil." : "Acesse seu painel.";
-        document.getElementById("authBtn").textContent = reg ? "Criar conta" : "Entrar";
-        if (reg) toggleFields();
-      }
-
-      function toggleFields() {
-        var role = document.getElementById("inpRole").value;
-        document.getElementById("codeField").classList.toggle("hidden", role === "student");
-        document.getElementById("classField").classList.toggle("hidden", role === "coordinator");
-      }
-
-      async function handleAuth(e) {
-        e.preventDefault();
-        var email = document.getElementById("inpEmail").value.trim();
-        var pwd = document.getElementById("inpPwd").value;
-        if (!email || pwd.length &lt; 6) return toast("E-mail e senha (6+ caracteres) obrigatórios.", "error");
-        try {
-          if (isRegister) {
-            var name = document.getElementById("inpName").value.trim();
-            var role = document.getElementById("inpRole").value;
-            var code = document.getElementById("inpCode") ? document.getElementById("inpCode").value.trim() : "";
-            if (!name) return toast("Informe seu nome.", "error");
-            if (role === "teacher" && code !== PROFESSOR_CODE) return toast("Código de professor inválido.", "error");
-            if (role === "coordinator" && code !== COORDINATOR_CODE) return toast("Código de coordenador inválido.", "error");
-            var selectedClasses = [];
-            if (role !== "coordinator") { var checkboxes = document.querySelectorAll("#classCheckboxes input[type=checkbox]:checked"); checkboxes.forEach(function(cb){selectedClasses.push(cb.value);}); if (selectedClasses.length === 0) return toast("Selecione pelo menos uma turma.", "error"); }
-            var cred = await auth.createUserWithEmailAndPassword(email, pwd);
-            await db.collection("users").doc(cred.user.uid).set({
-              name: name, email: email, role: role,
-              className: role === "coordinator" ? "Todas as turmas" : selectedClasses[0],
-              classes: role === "coordinator" ? ["Todas as turmas"] : selectedClasses,
-              xp: 0, cactoscoins: 0, level: 1, booksRead: 0, isActive: true,
-              createdAt: new Date().toISOString()
-            });
-            toast("Conta criada! Bem-vindo ao Sertão Literário.", "success");
-          } else {
-            await auth.signInWithEmailAndPassword(email, pwd);
-          }
-        } catch(err) {
-          var msgs = { "auth/invalid-credential": "E-mail ou senha inválidos.", "auth/email-already-in-use": "Este e-mail já está cadastrado.", "auth/too-many-requests": "Muitas tentativas. Aguarde e tente novamente." };
-          toast(msgs[err.code] || "Erro ao acessar. Tente novamente.", "error");
-          console.error(err);
-        }
-      }
-
-      // Timeout de segurança: se o Firebase não responder em 8s, mostra erro
-      var loadTimeout = setTimeout(function() {
-        if (!authResolved) {
-          document.getElementById("app").innerHTML = '<div class="empty-state" style="margin-top:35vh"><h2 style="color:var(--danger)">Tempo limite excedido</h2><p style="margin-top:10px;color:var(--muted)">O Firebase não respondeu. Verifique sua internet e atualize a página.</p><button class="primary-btn" style="margin-top:20px;display:inline-flex" onclick="location.reload()">Atualizar página</button></div>';
-        }
-      }, 8000);
-
-      auth.onAuthStateChanged(function(user) {
-        authResolved = true;
-        clearTimeout(loadTimeout);
-
-        if (!user) {
-          currentUser = null; currentProfile = null;
-          // Tenta carregar a logo do localStorage (já salva de quando estava logado)
-          renderAuth();
-          return;
-        }
-
-        db.collection("users").doc(user.uid).get().then(function(snap) {
-          if (snap.exists) {
-            currentUser = user;
-            currentProfile = Object.assign({ uid: user.uid }, snap.data());
-            // Tenta carregar a logo do Firestore (opcional, não trava)
-            db.collection("settings").doc("appearance").get().then(function(s) {
-              if (s.exists && s.data().logoUrl) { appLogoUrl = s.data().logoUrl; localStorage.setItem("st-logo", appLogoUrl); }
-            }).catch(function() {}).finally(function() { renderApp(); });
-          } else {
-            renderAuth();
-          }
-        }).catch(function(err) {
-          console.error(err);
-          renderAuth();
-        });
-      });
+      var newBtn = document.getElementById("newMissionBtn");
+      if (newBtn) newBtn.onclick = showMissionModal;
+      loadMissions();
     }
+
+    async function loadMissions() {
+      try {
+        var q = db.collection("missions").where("isActive","==",true).orderBy("createdAt","desc").limit(20);
+        var snap = await q.get();
+        var el = $("#missionsContainer");
+        if (snap.empty) { el.innerHTML = '<div class="empty-state">Nenhuma missão ativa.</div>'; return; }
+        var html = "";
+        snap.forEach(function(d) {
+          var m = d.data();
+          html += '<div class="panel" style="padding:18px;margin-bottom:10px">' +
+            '<div class="flex-between"><strong>' + m.title + '</strong><span class="reward" style="color:var(--primary-dark);font-weight:800">+' + (m.coins||0) + ' 🌵</span></div>' +
+            '<p class="muted" style="margin-top:6px">' + (m.description||"") + '</p>';
+          if (currentProfile.role === "student") html += '<button class="primary-btn" style="margin-top:10px;padding:8px 12px;min-height:auto;font-size:13px" data-mission="' + d.id + '">Concluir missão</button>';
+          html += '</div>';
+        });
+        el.innerHTML = html;
+        var btns = document.querySelectorAll("[data-mission]");
+        for (var i = 0; i &lt; btns.length; i++) btns[i].onclick = function() { toast("Missão enviada para validação!", "success"); };
+      } catch(e) { console.error(e); }
+    }
+
+    function showMissionModal() {
+      openModal("Criar desafio", '<form id="missionForm" class="form-grid"><label>Título <input name="title" required /></label><label>Descrição <textarea name="description" required></textarea></label><label>Recompensa (Cactoscoins) <input name="coins" type="number" min="1" value="50" /></label><button class="primary-btn full" type="submit">Publicar desafio</button></form>');
+      document.getElementById("missionForm").onsubmit = async function(e) {
+        e.preventDefault();
+        var fd = new FormData(e.target);
+        await db.collection("missions").add({ title: fd.get("title"), description: fd.get("description"), coins: Number(fd.get("coins")), className: currentProfile.role === "teacher" && currentProfile.classes ? currentProfile.classes[0] : (currentProfile.className || "6º Ano"), isActive: true, createdBy: currentUser.uid, createdAt: new Date().toISOString() });
+        closeModal(); toast("Desafio publicado!", "success"); renderHome();
+      };
+    }
+
+    async function renderLibrary() {
+      var books = [];
+      try { var q = db.collection("books").where("isActive","==",true).orderBy("title"); var snap = await q.get(); snap.forEach(function(d) { books.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
+      var isStaff = currentProfile.role !== "student";
+      var booksHtml = books.length ? "" : '<div class="empty-state">Nenhum livro cadastrado.</div>';
+      for (var i = 0; i &lt; books.length; i++) {
+        var b = books[i];
+        booksHtml += '<article class="book-card"><div class="book-cover">📚</div><div class="book-content"><span class="tag">'+(b.category||"Literatura")+'</span><h3>'+b.title+'</h3><p>'+(b.author||"")+' • '+(b.pages||0)+'p</p><div class="book-meta">'+(b.pdfUrl?'<a class="secondary-btn" href="'+b.pdfUrl+'" target="_blank" style="font-size:12px">📄 PDF</a>':'<span class="muted" style="font-size:12px">Sem PDF</span>');
+        if (isStaff) booksHtml += '<button class="danger-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-del="'+b.id+'">Excluir</button>';
+        else if (currentProfile.role === "student") booksHtml += '<button class="primary-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-read="'+b.title.replace(/"/g,"&quot;")+'">Ler</button>';
+        booksHtml += '</div></div></article>';
+      }
+      $("#pageContent").innerHTML = pageTitle("Biblioteca", isStaff ? "Gerencie os livros." : "Descubra leituras.", isStaff ? '<button class="primary-btn" id="addBookBtn">+ Livro</button>' : "") + '<div class="panel"><div class="flex" style="margin-bottom:18px"><input id="searchInput" placeholder="Buscar..." style="flex:1" /></div><div id="booksGrid" class="cards-grid">'+booksHtml+'</div></div>';
+      document.getElementById("searchInput").oninput = function(e) { var t = e.target.value.toLowerCase(); var cards = $$(".book-card"); for (var i = 0; i &lt; cards.length; i++) cards[i].style.display = cards[i].textContent.toLowerCase().indexOf(t) >= 0 ? "" : "none"; };
+      var addBtn = document.getElementById("addBookBtn"); if (addBtn) addBtn.onclick = function() {
+        openModal("Adicionar livro", '<form id="bookForm" class="form-grid"><label>Título <input name="title" required /></label><label>Autor <input name="author" required /></label><label>Páginas <input name="pages" type="number" min="1" /></label><label>Categoria <input name="category" value="Literatura" /></label><label>Link do PDF <input name="pdfUrl" type="url" /></label><button class="primary-btn full" type="submit">Salvar</button></form>');
+        document.getElementById("bookForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("books").add({ title: fd.get("title"), author: fd.get("author"), pages: Number(fd.get("pages")), category: fd.get("category"), pdfUrl: fd.get("pdfUrl"), isActive: true, createdAt: new Date().toISOString() }); closeModal(); toast("Livro adicionado!", "success"); renderLibrary(); };
+      };
+      var delBtns = document.querySelectorAll("[data-del]"); for (var i = 0; i &lt; delBtns.length; i++) delBtns[i].onclick = async function() { if (confirm("Excluir?")) { await db.collection("books").doc(this.dataset.del).delete(); toast("Livro removido."); renderLibrary(); } };
+      var readBtns = document.querySelectorAll("[data-read]"); for (var i = 0; i &lt; readBtns.length; i++) readBtns[i].onclick = function() {
+        var title = this.dataset.read;
+        openModal("Registrar leitura", '<form id="readForm" class="form-grid"><label>Livro <input name="bookTitle" value="'+title.replace(/"/g,"&quot;")+'" readonly /></label><label>Páginas lidas <input name="pages" type="number" min="1" required /></label><label>Data <input name="date" type="date" required /></label><button class="primary-btn full" type="submit">Enviar para aprovação</button></form>');
+        document.getElementById("readForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("readings").add({ userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className, bookTitle: fd.get("bookTitle"), pagesRead: Number(fd.get("pages")), readingDate: fd.get("date"), status: "pending", createdAt: new Date().toISOString() }); closeModal(); toast("Leitura enviada para aprovação!", "success"); };
+      };
+    }
+
+    async function renderStore() {
+      var items = []; try { var snap = await db.collection("storeItems").where("isActive","==",true).get(); snap.forEach(function(d) { items.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
+      var isStu = currentProfile.role === "student"; var coins = currentProfile.cactoscoins || 0;
+      var itemsHtml = items.length ? "" : '<div class="empty-state">Nenhum item disponível.</div>';
+      for (var i = 0; i &lt; items.length; i++) { var it = items[i]; itemsHtml += '<article class="book-card"><div class="book-cover">'+(it.icon||"🎨")+'</div><div class="book-content"><h3>'+it.title+'</h3><p>'+(it.description||"")+'</p><div class="book-meta"><strong>🌵 '+(it.priceCoins||0)+' • ⭐ '+(it.requiredXp||0)+'</strong>'+(isStu?'<button class="primary-btn" data-idx="'+i+'">Comprar</button>':'')+'</div></div></article>'; }
+      $("#pageContent").innerHTML = pageTitle("Loja Literária", isStu ? coins+" Cactoscoins disponíveis" : "Itens para os alunos.") + '<div class="stats-grid" style="margin-bottom:18px">'+statCard("🌵","Saldo",coins)+statCard("⭐","XP",currentProfile.xp||0)+'</div><div class="cards-grid">'+itemsHtml+'</div>';
+      if (isStu) { var buyBtns = document.querySelectorAll("[data-idx]"); for (var i = 0; i &lt; buyBtns.length; i++) buyBtns[i].onclick = (function(idx) { return async function() { var item = items[idx]; if (coins &lt; item.priceCoins) return toast("Cactoscoins insuficientes.", "error"); if ((currentProfile.xp||0) &lt; item.requiredXp) return toast("XP insuficiente.", "error"); try { await db.runTransaction(async function(tx) { var ref = db.collection("users").doc(currentUser.uid); var snap = await tx.get(ref); var u = snap.data(); if ((u.cactoscoins||0) &lt; item.priceCoins) throw new Error("Saldo"); tx.update(ref, { cactoscoins: (u.cactoscoins||0) - item.priceCoins }); tx.set(db.collection("purchases").doc(), { userId: currentUser.uid, itemId: item.id, price: item.priceCoins, createdAt: new Date().toISOString() }); }); toast("Item adquirido!", "success"); setTimeout(function() { renderStore(); }, 500); } catch(e) { toast("Erro na compra.", "error"); } }; })(i); }
+    }
+
+    async function renderBookTok() {
+      var posts = []; try { var q = currentProfile.role === "coordinator" ? db.collection("posts").where("status","==","active").orderBy("createdAt","desc") : db.collection("posts").where("className","==",currentProfile.className).where("status","==","active").orderBy("createdAt","desc"); var snap = await q.get(); snap.forEach(function(d) { posts.push({ id: d.id, ...d.data() }); }); } catch(e) { console.error(e); }
+      var postsHtml = posts.length ? "" : '<div class="empty-state">Nenhuma publicação ainda.</div>';
+      for (var i = 0; i &lt; posts.length; i++) { var p = posts[i]; postsHtml += '<article class="post-card"><div class="post-video">'+(p.videoUrl?"▶":"📖")+'</div><div class="post-content"><span class="tag">@'+((p.userName||"").toLowerCase().replace(/\s/g,""))+'</span><h3>'+p.title+'</h3><p>'+(p.description||"")+'</p><div class="post-actions"><button class="like-btn" data-id="'+p.id+'">❤️ '+(p.likesCount||0)+'</button><button>💬 '+(p.commentsCount||0)+'</button></div></div></article>'; }
+      $("#pageContent").innerHTML = pageTitle("BookTok", "Compartilhe resenhas.", '<button class="primary-btn" id="newPostBtn">Nova resenha</button>')+'<div class="cards-grid">'+postsHtml+'</div>';
+      document.getElementById("newPostBtn").onclick = function() { openModal("Nova resenha", '<form id="postForm" class="form-grid"><label>Título <input name="title" required /></label><label>Descrição <textarea name="description" required></textarea></label><label>Link do vídeo <input name="videoUrl" type="url" /></label><button class="primary-btn full" type="submit">Publicar</button></form>'); document.getElementById("postForm").onsubmit = async function(e) { e.preventDefault(); var fd = new FormData(e.target); await db.collection("posts").add({ title: fd.get("title"), description: fd.get("description"), videoUrl: fd.get("videoUrl"), userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className, likesCount: 0, commentsCount: 0, status: "active", createdAt: new Date().toISOString() }); closeModal(); toast("Resenha publicada!", "success"); renderBookTok(); }; };
+      var likeBtns = document.querySelectorAll(".like-btn"); for (var i = 0; i &lt; likeBtns.length; i++) likeBtns[i].onclick = async function() { await db.collection("posts").doc(this.dataset.id).update({ likesCount: firebase.firestore.FieldValue.increment(1) }); toast("Curtiu!"); renderBookTok(); };
+    }
+
+    function renderProfile() {
+      var p = currentProfile; var isCoord = p.role === "coordinator";
+      var photoSection = '<div class="text-center" style="margin-bottom:20px">'+avatarHtml(p.photoUrl, p.name, 100)+'<div class="file-input-wrapper" style="margin-top:10px"><button class="secondary-btn">Alterar foto</button><input type="file" id="photoInput" accept="image/*" /></div><div id="photoProgress" class="hidden" style="margin-top:8px;color:var(--muted);font-size:13px">Enviando...</div></div>';
+      $("#pageContent").innerHTML = pageTitle("Meu perfil", "Gerencie suas informações.", '<span class="tag" style="font-size:14px">'+roleLabel(p.role)+'</span>') +
+        '<div class="content-grid">' +
+        '<div class="panel"><h2 style="margin-bottom:20px">Informações</h2>'+photoSection+'<div class="form-grid"><label>Nome <input id="editName" value="'+(p.name||"").replace(/"/g,"&quot;")+'" /></label><label>E-mail <input value="'+(p.email||"").replace(/"/g,"&quot;")+'" disabled /></label><label>Turma(s) <input value="'+classDisplay(p).replace(/"/g,"&quot;")+'" disabled /></label><button id="saveBtn" class="primary-btn full">Salvar alterações</button><button id="pwdBtn" class="secondary-btn full">Alterar senha</button>'+(isCoord?'<button id="logoBtn" class="secondary-btn full">Alterar logo do app</button>':'')+'<button id="delBtn" class="danger-btn full">Apagar conta</button></div></div>' +
+        '<div class="panel"><h2 style="margin-bottom:20px">Histórico</h2><div class="progress-list"><div class="ranking-item"><span>📚</span><span class="ranking-name">Livros lidos</span><strong>'+(p.booksRead||0)+'</strong></div><div class="ranking-item"><span>⭐</span><span class="ranking-name">XP</span><strong>'+(p.xp||0)+'</strong></div><div class="ranking-item"><span>🏅</span><span class="ranking-name">Nível</span><strong>'+(p.level||1)+'</strong></div><div class="ranking-item"><span>🌵</span><span class="ranking-name">Cactoscoins</span><strong>'+(p.cactoscoins||0)+'</strong></div></div></div></div>';
+
+      document.getElementById("photoInput").onchange = async function(e) { var file = e.target.files[0]; if (!file) return; var prog = document.getElementById("photoProgress"); prog.classList.remove("hidden"); prog.textContent = "Enviando foto..."; try { var path = "profile-photos/"+currentUser.uid+"/"+Date.now()+"-"+file.name; var ref = storage.ref(path); await ref.put(file); var url = await ref.getDownloadURL(); await db.collection("users").doc(currentUser.uid).update({ photoUrl: url }); currentProfile.photoUrl = url; toast("Foto atualizada!", "success"); renderProfile(); } catch(err) { toast("Erro ao enviar foto.", "error"); console.error(err); prog.classList.add("hidden"); } };
+      document.getElementById("saveBtn").onclick = async function() { var name = document.getElementById("editName").value.trim(); if (!name) return toast("Informe seu nome.", "error"); await db.collection("users").doc(currentUser.uid).update({ name: name }); currentProfile.name = name; toast("Perfil atualizado!", "success"); renderApp(); };
+      document.getElementById("pwdBtn").onclick = async function() { var current = prompt("Senha atual:"); if (!current) return; var newPwd = prompt("Nova senha (6+):"); if (!newPwd || newPwd.length &lt; 6) return toast("Nova senha inválida.", "error"); try { var cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, current); await auth.currentUser.reauthenticateWithCredential(cred); await auth.currentUser.updatePassword(newPwd); toast("Senha alterada!", "success"); } catch(e) { toast("Senha atual incorreta.", "error"); } };
+      var logoBtn = document.getElementById("logoBtn"); if (logoBtn) logoBtn.onclick = function() { openModal("Alterar logo do app", '<div class="form-grid"><p style="color:var(--muted)">Selecione a imagem da logo.</p><div class="file-input-wrapper"><button class="secondary-btn full">Escolher arquivo</button><input type="file" id="logoInput" accept="image/*" /></div><div id="logoPreview" class="hidden text-center" style="margin-top:10px"></div><div id="logoProgress" class="hidden" style="color:var(--muted);font-size:13px;text-align:center">Enviando logo...</div></div>'); document.getElementById("logoInput").onchange = async function(e) { var file = e.target.files[0]; if (!file) return; document.getElementById("logoPreview").innerHTML = '<img src="'+URL.createObjectURL(file)+'" style="max-width:200px;border-radius:12px;border:2px solid var(--primary)" />'; document.getElementById("logoPreview").classList.remove("hidden"); document.getElementById("logoProgress").classList.remove("hidden"); try { var path = "app-settings/logo/"+Date.now()+"-"+file.name; var ref = storage.ref(path); await ref.put(file); var url = await ref.getDownloadURL(); await db.collection("settings").doc("appearance").set({ logoUrl: url }, { merge: true }); appLogoUrl = url; localStorage.setItem("st-logo", url); closeModal(); toast("Logo atualizada!", "success"); setTimeout(function() { renderApp(); }, 500); } catch(err) { toast("Erro ao enviar logo.", "error"); console.error(err); document.getElementById("logoProgress").classList.add("hidden"); } }; };
+      document.getElementById("delBtn").onclick = async function() { var c = prompt('Digite CONFIRMAR para excluir sua conta:'); if (c !== "CONFIRMAR") return; var pwd = prompt("Sua senha atual:"); if (!pwd) return; try { var cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, pwd); await auth.currentUser.reauthenticateWithCredential(cred); await db.collection("users").doc(currentUser.uid).delete(); await auth.currentUser.delete(); toast("Conta excluída."); } catch(e) { toast("Senha incorreta.", "error"); } };
+    }
+
+    var isRegister = false;
+
+    function renderAuth() {
+      document.getElementById("app").innerHTML =
+        '<div class="auth-layout">' +
+          '<div class="auth-hero"><div class="brand">'+brandHtml()+'<span class="brand-text">Sertão Literário</span></div><div class="auth-hero-content"><h1>A leitura virou jornada.</h1><p>Uma experiência literária gamificada. Leia, conquiste, compartilhe.</p></div></div>' +
+          '<div class="auth-panel"><div class="auth-card"><h2 id="authTitle">Entrar na jornada</h2><p id="authDesc">Acesse seu painel de leitura.</p>' +
+          '<div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabReg">Criar conta</button></div>' +
+          '<form id="authForm" class="form-grid">' +
+          '<div id="nameField" class="hidden"><label>Nome <input id="inpName" type="text" /></label></div>' +
+          '<label>E-mail <input id="inpEmail" type="email" required /></label>' +
+          '<div id="roleField" class="hidden"><label>Perfil <select id="inpRole"><option value="student">Aluno</option><option value="teacher">Professor</option><option value="coordinator">Coordenador</option></select></label></div>' +
+          '<div id="classField" class="hidden"><label>Turma(s) — selecione as que você leciona ou estuda</label><div id="classCheckboxes" class="checkbox-group">'+CLASS_OPTIONS.map(function(c){return '<label><input type="checkbox" value="'+c+'" /> '+c+'</label>';}).join("")+'</div></div>' +
+          '<div id="codeField" class="hidden"><label>Código de segurança <input id="inpCode" type="password" placeholder="Código institucional" /></label></div>' +
+          '<label>Senha (6+ dígitos) <input id="inpPwd" type="password" minlength="6" required /></label>' +
+          '<button class="primary-btn full" type="submit" id="authBtn">Entrar</button></form></div></div></div>';
+      document.getElementById("tabLogin").onclick = function() { setMode(false); };
+      document.getElementById("tabReg").onclick = function() { setMode(true); };
+      document.getElementById("inpRole").onchange = function() { toggleFields(); };
+      document.getElementById("authForm").onsubmit = handleAuth;
+      setMode(false);
+    }
+
+    function setMode(reg) {
+      isRegister = reg;
+      document.getElementById("tabLogin").classList.toggle("active", !reg);
+      document.getElementById("tabReg").classList.toggle("active", reg);
+      document.getElementById("nameField").classList.toggle("hidden", !reg);
+      document.getElementById("roleField").classList.toggle("hidden", !reg);
+      if (!reg) { document.getElementById("classField").classList.add("hidden"); document.getElementById("codeField").classList.add("hidden"); }
+      document.getElementById("authTitle").textContent = reg ? "Crie sua jornada" : "Entrar na jornada";
+      document.getElementById("authDesc").textContent = reg ? "Escolha seu perfil." : "Acesse seu painel.";
+      document.getElementById("authBtn").textContent = reg ? "Criar conta" : "Entrar";
+      if (reg) toggleFields();
+    }
+
+    function toggleFields() {
+      var role = document.getElementById("inpRole").value;
+      document.getElementById("codeField").classList.toggle("hidden", role === "student");
+      document.getElementById("classField").classList.toggle("hidden", role === "coordinator");
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      var email = document.getElementById("inpEmail").value.trim();
+      var pwd = document.getElementById("inpPwd").value;
+      if (!email || pwd.length &lt; 6) return toast("E-mail e senha (6+ caracteres) obrigatórios.", "error");
+      try {
+        if (isRegister) {
+          var name = document.getElementById("inpName").value.trim();
+          var role = document.getElementById("inpRole").value;
+          var code = document.getElementById("inpCode") ? document.getElementById("inpCode").value.trim() : "";
+          if (!name) return toast("Informe seu nome.", "error");
+          if (role === "teacher" && code !== PROFESSOR_CODE) return toast("Código de professor inválido.", "error");
+          if (role === "coordinator" && code !== COORDINATOR_CODE) return toast("Código de coordenador inválido.", "error");
+          var selectedClasses = [];
+          if (role !== "coordinator") { var checkboxes = document.querySelectorAll("#classCheckboxes input[type=checkbox]:checked"); checkboxes.forEach(function(cb){selectedClasses.push(cb.value);}); if (selectedClasses.length === 0) return toast("Selecione pelo menos uma turma.", "error"); }
+          var cred = await auth.createUserWithEmailAndPassword(email, pwd);
+          await db.collection("users").doc(cred.user.uid).set({
+            name: name, email: email, role: role,
+            className: role === "coordinator" ? "Todas as turmas" : selectedClasses[0],
+            classes: role === "coordinator" ? ["Todas as turmas"] : selectedClasses,
+            xp: 0, cactoscoins: 0, level: 1, booksRead: 0, isActive: true,
+            createdAt: new Date().toISOString()
+          });
+          toast("Conta criada! Bem-vindo ao Sertão Literário.", "success");
+        } else {
+          await auth.signInWithEmailAndPassword(email, pwd);
+        }
+      } catch(err) {
+        var msgs = { "auth/invalid-credential": "E-mail ou senha inválidos.", "auth/email-already-in-use": "Este e-mail já está cadastrado.", "auth/too-many-requests": "Muitas tentativas. Aguarde e tente novamente." };
+        toast(msgs[err.code] || "Erro ao acessar. Tente novamente.", "error");
+        console.error(err);
+      }
+    }
+
+    auth.onAuthStateChanged(function(user) {
+      if (!user) {
+        currentUser = null; currentProfile = null;
+        renderAuth();
+        return;
+      }
+      db.collection("users").doc(user.uid).get().then(function(snap) {
+        if (snap.exists) {
+          currentUser = user;
+          currentProfile = Object.assign({ uid: user.uid }, snap.data());
+          db.collection("settings").doc("appearance").get().then(function(s) {
+            if (s.exists && s.data().logoUrl) { appLogoUrl = s.data().logoUrl; localStorage.setItem("st-logo", appLogoUrl); }
+          }).catch(function() {}).finally(function() { renderApp(); });
+        } else {
+          renderAuth();
+        }
+      }).catch(function(err) { console.error(err); renderAuth(); });
+    });
   </script>
 </body>
 </html>
