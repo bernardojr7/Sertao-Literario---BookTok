@@ -4,10 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sertão Literário</title>
-
+  
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Firebase Compat Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -52,6 +59,7 @@
     button { border: 0; cursor: pointer; }
     .hidden { display: none !important; }
 
+    /* Toast Notifications */
     .toast {
       position: fixed; right: 22px; top: 22px; z-index: 50;
       max-width: 380px; padding: 16px 20px; border-radius: 14px;
@@ -62,8 +70,8 @@
     .toast.success { background: var(--green-dark); }
     .toast.error { background: #b91c1c; }
 
+    /* Auth Page */
     .auth-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(380px, 0.9fr); }
-
     .auth-hero {
       position: relative; overflow: hidden; padding: 70px clamp(30px, 7vw, 110px);
       color: white;
@@ -90,6 +98,7 @@
     .auth-tabs button { padding: 12px; border-radius: 10px; color: var(--muted); background: transparent; font-weight: 600; }
     .auth-tabs button.active { color: var(--text); background: var(--surface); box-shadow: 0 4px 14px rgba(15,23,42,0.08); }
 
+    /* Form Components */
     .form-grid { display: grid; gap: 16px; }
     label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 600; }
     input, select, textarea {
@@ -98,6 +107,13 @@
     }
     textarea { min-height: 110px; resize: vertical; }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(245,158,11,0.14); }
+
+    .checkbox-group {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 10px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 13px;
+    }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; }
+    .checkbox-item input { width: auto; }
 
     .primary-btn, .secondary-btn, .danger-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -109,8 +125,8 @@
     .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover { transform: translateY(-2px); }
     .full { width: 100%; }
 
+    /* Main App Layout */
     .app-shell { min-height: 100vh; padding-bottom: 92px; }
-
     .topbar {
       position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
       gap: 18px; padding: 18px clamp(18px, 5vw, 70px);
@@ -118,17 +134,27 @@
       background: color-mix(in srgb, var(--surface) 86%, transparent); backdrop-filter: blur(16px);
     }
     .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800; }
-    .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--green)); font-size: 24px; }
+    .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--green)); font-size: 24px; overflow: hidden; }
+    .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+    
     .top-actions { display: flex; align-items: center; gap: 10px; }
     .icon-btn { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 12px; color: var(--text); background: var(--surface); }
     .user-pill { display: flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
-    .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--cyan)); color: white; font-weight: 800; }
+    
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      color: white; font-weight: 800; font-size: 14px;
+      display: grid; place-items: center; overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .page { width: min(1400px, 100%); margin: 0 auto; padding: 34px clamp(18px, 5vw, 70px); }
     .page-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
     .page-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(36px, 5vw, 52px); line-height: 1; }
     .page-title p { margin-top: 7px; color: var(--muted); }
 
+    /* Dashboard Widgets */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
     .stat-card {
       position: relative; overflow: hidden; padding: 22px; border: 1px solid var(--border);
@@ -156,21 +182,22 @@
     .xp-badge { padding: 5px 9px; border-radius: 8px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 12px; font-weight: 700; }
 
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
-    .book-card, .post-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    .book-card, .post-card, .campaign-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
     .book-cover { height: 170px; display: grid; place-items: center; background: linear-gradient(135deg, #f59e0b, #15803d); color: white; font-family: 'Baloo 2', cursive; font-size: 24px; }
-    .book-content, .post-content { padding: 18px; }
-    .book-content h3 { margin-bottom: 5px; }
-    .book-content p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .book-content, .post-content, .campaign-content { padding: 18px; }
+    .book-content h3, .campaign-content h3 { margin-bottom: 5px; }
+    .book-content p, .campaign-content p { color: var(--muted); font-size: 13px; line-height: 1.5; }
     .book-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
 
-    .tag { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 11px; font-weight: 700; }
+    .tag { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
 
     .post-video { height: 220px; display: grid; place-items: center; background: linear-gradient(135deg, #06b6d4, #ec4899); color: white; font-size: 48px; }
     .post-actions { display: flex; gap: 12px; margin-top: 14px; }
-    .post-actions button { padding: 6px 10px; border-radius: 9px; color: var(--muted); background: var(--surface2); }
+    .post-actions button { padding: 6px 10px; border-radius: 99px; color: var(--muted); background: var(--surface2); }
 
     .empty-state { padding: 50px 20px; color: var(--muted); text-align: center; }
 
+    /* Modal */
     .modal {
       position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px;
       background: rgba(15,23,42,0.55); backdrop-filter: blur(5px);
@@ -179,6 +206,7 @@
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .modal-header h2 { font-family: 'Baloo 2', cursive; font-size: 28px; }
 
+    /* Bottom Navigation Bar */
     .bottom-nav {
       position: fixed; left: 50%; bottom: 16px; z-index: 20;
       width: min(720px, calc(100% - 28px));
@@ -199,14 +227,14 @@
 
     @media (max-width: 1050px) {
       .auth-layout { grid-template-columns: 1fr; }
-      .auth-hero { min-height: 400px; }
-      .auth-hero-content { margin-top: 60px; }
+      .auth-hero { min-height: 350px; }
+      .auth-hero-content { margin-top: 40px; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .content-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
-      .auth-hero { min-height: 370px; padding: 32px 22px; }
-      .auth-hero-content h1 { font-size: 48px; }
+      .auth-hero { min-height: 300px; padding: 32px 22px; }
+      .auth-hero-content h1 { font-size: 42px; }
       .auth-panel { padding: 18px; }
       .auth-card { padding: 24px; }
       .topbar { padding: 14px 18px; }
@@ -233,12 +261,8 @@
 
   <div id="toast" class="toast"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
-
+  <script>
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyA-xVOI6qXkEndKXkSp6-zRLY01qNkQH4E",
       authDomain: "sertao-literario-booktok.firebaseapp.com",
@@ -248,29 +272,31 @@
       appId: "1:291651799720:web:b5c79954511f09b8ddd09d"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
     const PROFESSOR_CODE = "SERTAO-PROF-2026";
     const COORDINATOR_CODE = "SERTAO-COORD-2026";
+    const TURMAS_DISPONIVEIS = ["5º Ano", "6º Ano", "7º Ano", "8º Ano", "9º Ano"];
 
     let currentUser = null;
     let currentProfile = null;
     let currentPage = "home";
     let currentTheme = localStorage.getItem("st-theme") || "light";
 
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
-
     document.body.classList.toggle("dark", currentTheme === "dark");
+
+    // --- HELPER FUNCTIONS ---
+    function $(s) { return document.querySelector(s); }
+    function $$(s) { return document.querySelectorAll(s); }
 
     function toast(msg, type = "") {
       const t = $("#toast");
       t.textContent = msg;
-      t.className = `toast show ${type}`;
-      setTimeout(() => t.className = "toast", 3500);
+      t.className = "toast show " + type;
+      setTimeout(() => { t.className = "toast"; }, 3500);
     }
 
     function initials(name) {
@@ -278,7 +304,8 @@
     }
 
     function roleLabel(r) {
-      return { student: "Aluno", teacher: "Professor", coordinator: "Coordenador" }[r] || "Usuário";
+      const map = { student: "Aluno", teacher: "Professor", coordinator: "Coordenador" };
+      return map[r] || "Usuário";
     }
 
     function openModal(title, body) {
@@ -299,25 +326,85 @@
       return `<div class="stat-card"><div class="stat-icon">${icon}</div><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
     }
 
-    function renderApp() {
-      const isStu = currentProfile.role === "student";
+    function renderAvatar(photoURL, name) {
+      if (photoURL) {
+        return `<div class="avatar"><img src="${photoURL}" alt="Perfil" /></div>`;
+      }
+      return `<div class="avatar">${initials(name)}</div>`;
+    }
 
-      document.getElementById("app").innerHTML = `
+    // --- SEED INITIAL DATA (BILIOTECA, MISSÕES E CAMPANHAS) ---
+    async function seedInitialData() {
+      try {
+        // Seed Books
+        const booksSnap = await db.collection("books").get();
+        if (booksSnap.empty) {
+          const initialBooks = [
+            { title: "O Auto da Compadecida", author: "Ariano Suassuna", pages: 208, category: "Teatro / Sertão", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
+            { title: "Vidas Secas", author: "Graciliano Ramos", pages: 176, category: "Literatura Sertaneja", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
+            { title: "O Pequeno Príncipe", author: "Antoine de Saint-Exupéry", pages: 96, category: "Infanto-Juvenil", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
+            { title: "Dom Casmurro", author: "Machado de Assis", pages: 256, category: "Clássico", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
+            { title: "Morte e Vida Severina", author: "João Cabral de Melo Neto", pages: 112, category: "Poesia / Sertão", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() }
+          ];
+          for (const b of initialBooks) { await db.collection("books").add(b); }
+        }
+
+        // Seed Missions
+        const missionsSnap = await db.collection("missions").get();
+        if (missionsSnap.empty) {
+          const initialMissions = [
+            { title: "🌵 Resenha Sertaneja", description: "Grave uma resenha em vídeo de 1 minuto no BookTok sobre um livro regional.", coins: 100, isActive: true, createdAt: new Date().toISOString() },
+            { title: "📖 Maratona de Leitura", description: "Leia e registre 50 páginas de qualquer livro da biblioteca neste final de semana.", coins: 80, isActive: true, createdAt: new Date().toISOString() },
+            { title: "💬 Clube da Leitura", description: "Comente em 3 vídeos de colegas de turma no BookTok.", coins: 50, isActive: true, createdAt: new Date().toISOString() }
+          ];
+          for (const m of initialMissions) { await db.collection("missions").add(m); }
+        }
+
+        // Seed Campaigns
+        const campaignsSnap = await db.collection("campaigns").get();
+        if (campaignsSnap.empty) {
+          const initialCampaigns = [
+            { title: "Festival Literário do Sertão 2026", description: "Leia 3 livros até o final do mês e ganhe a insígnia exclusiva do Sertão e 300 Cactoscoins!", banner: "🏜️", isActive: true, createdAt: new Date().toISOString() },
+            { title: "Campanha Cordel & Poesia", description: "Escreva ou declame um poema/cordel no BookTok e concorra a brindes na loja.", banner: "📜", isActive: true, createdAt: new Date().toISOString() }
+          ];
+          for (const c of initialCampaigns) { await db.collection("campaigns").add(c); }
+        }
+      } catch (e) {
+        console.error("Erro ao semear dados iniciais:", e);
+      }
+    }
+
+    // --- APP RENDERER ---
+    function renderApp() {
+      const p = currentProfile;
+      const icons = ["🏠","📚","🛍️","🎬","👤"];
+      const labels = ["Home","Biblioteca","Loja","BookTok","Perfil"];
+      const pages = ["home","library","store","booktok","profile"];
+
+      let navHtml = pages.map((page, i) => 
+        `<button class="nav-btn${page === currentPage ? ' active' : ''}" data-page="${page}">
+          <span>${icons[i]}</span><span>${labels[i]}</span>
+        </button>`
+      ).join("");
+
+      $("#app").innerHTML = `
         <div class="app-shell">
           <header class="topbar">
-            <div class="brand"><div class="brand-mark">🌵</div><span>Sertão Literário</span></div>
+            <div class="brand">
+              <div class="brand-mark">${p.photoURL ? `<img src="${p.photoURL}"/>` : '🌵'}</div>
+              <span>Sertão Literário</span>
+            </div>
             <div class="top-actions">
               <button id="themeBtn" class="icon-btn">${currentTheme === "dark" ? "☀" : "☾"}</button>
-              <div class="user-pill"><div class="avatar">${initials(currentProfile.name)}</div><span>${currentProfile.name?.split(" ")[0]}</span></div>
+              <div class="user-pill">
+                ${renderAvatar(p.photoURL, p.name)}
+                <span>${(p.name || "").split(" ")[0]}</span>
+              </div>
               <button id="logoutBtn" class="secondary-btn">Sair</button>
             </div>
           </header>
           <main id="pageContent" class="page"></main>
-          <nav class="bottom-nav">
-            ${["home","library","store","booktok","profile"].map((p,i) =>
-              `<button class="nav-btn ${p===currentPage?"active":""}" data-page="${p}"><span>${["🏠","📚","🛍️","🎬","👤"][i]}</span><span>${["Home","Biblioteca","Loja","BookTok","Perfil"][i]}</span></button>`
-            ).join("")}
-          </nav>
+          <nav class="bottom-nav">${navHtml}</nav>
         </div>`;
 
       $("#themeBtn").onclick = () => {
@@ -327,18 +414,30 @@
         renderApp();
       };
 
-      $("#logoutBtn").onclick = async () => { await signOut(auth); };
+      $("#logoutBtn").onclick = () => auth.signOut();
 
-      $$(".nav-btn").forEach(b => b.onclick = () => { currentPage = b.dataset.page; renderApp(); });
+      $$(".nav-btn").forEach(btn => {
+        btn.onclick = function() {
+          currentPage = this.dataset.page;
+          renderApp();
+        };
+      });
 
       loadPage();
     }
 
     function loadPage() {
-      const pages = { home: renderHome, library: renderLibrary, store: renderStore, booktok: renderBookTok, profile: renderProfile };
+      const pages = {
+        home: renderHome,
+        library: renderLibrary,
+        store: renderStore,
+        booktok: renderBookTok,
+        profile: renderProfile
+      };
       pages[currentPage]();
     }
 
+    // --- HOME PAGE ---
     async function renderHome() {
       const p = currentProfile;
       const isStu = p.role === "student";
@@ -347,281 +446,348 @@
 
       if (isStu) {
         try {
-          const q = query(collection(db, "users"), where("className", "==", p.className), where("role", "==", "student"), orderBy("xp", "desc"), limit(5));
-          const snap = await getDocs(q);
-          const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          if (users.length) {
-            rankingHtml = users.map((u, i) =>
-              `<div class="ranking-item"><div class="ranking-pos">${i+1}</div><div class="avatar" style="width:30px;height:30px;font-size:13px">${initials(u.name)}</div><div class="ranking-name">${u.name}</div><span class="xp-badge">${u.xp||0} XP</span></div>`
-            ).join("");
+          const q = db.collection("users")
+            .where("className", "==", p.className)
+            .where("role", "==", "student")
+            .orderBy("xp", "desc")
+            .limit(5);
+          const snap = await q.get();
+          if (!snap.empty) {
+            const users = [];
+            snap.forEach(d => users.push({ id: d.id, ...d.data() }));
+            rankingHtml = users.map((u, i) => `
+              <div class="ranking-item">
+                <div class="ranking-pos">${i+1}</div>
+                ${renderAvatar(u.photoURL, u.name)}
+                <div class="ranking-name">${u.name}</div>
+                <span class="xp-badge">${u.xp || 0} XP</span>
+              </div>
+            `).join("");
           }
-        } catch (e) { console.error(e); }
+        } catch(e) { console.error(e); }
       }
 
       const booksRead = p.booksRead || 0;
       const xp = p.xp || 0;
       const coins = p.cactoscoins || 0;
       const level = p.level || 1;
+      const turmasText = Array.isArray(p.classes) ? p.classes.join(", ") : (p.className || "Geral");
 
-      $("#pageContent").innerHTML = `
-        ${pageTitle(`Olá, ${(p.name||"").split(" ")[0]||"Leitor"}!`, isStu ? `Turma ${p.className}` : `Painel • ${roleLabel(p.role)}`)}
-
-        <div class="stats-grid">
-          ${isStu ? statCard("🌵","Cactoscoins",coins) : statCard("👥","Turmas",p.role==="coordinator"?"Todas":"3")}
-          ${isStu ? statCard("⭐","XP",xp) : statCard("📖","Leituras pendentes","0")}
-          ${isStu ? statCard("🏅","Nível",level) : statCard("🎯","Missões ativas","0")}
-          ${isStu ? statCard("📚","Livros lidos",booksRead) : statCard("📈","Engajamento","0%")}
+      $("#pageContent").innerHTML =
+        pageTitle(`Olá, ${(p.name || "").split(" ")[0]}!`, isStu ? `Turma: ${p.className}` : `${roleLabel(p.role)} • Turmas: ${turmasText}`) +
+        `<div class="stats-grid">
+          ${isStu ? statCard("🌵","Cactoscoins",coins) : statCard("👥","Turmas Ativas", Array.isArray(p.classes) ? p.classes.length : 1)}
+          ${isStu ? statCard("⭐","XP",xp) : statCard("📖","Leituras Pendentes","0")}
+          ${isStu ? statCard("🏅","Nível",level) : statCard("🎯","Desafios Ativos","3")}
+          ${isStu ? statCard("📚","Livros Lidos",booksRead) : statCard("📈","Engajamento","85%")}
         </div>
+        
+        <section class="panel section-space">
+          <div class="panel-header"><h2>Campanhas Literárias 🎉</h2></div>
+          <div id="campaignsContainer" class="cards-grid">Carregando campanhas...</div>
+        </section>
 
         <div class="content-grid">
           <section class="panel">
-            <div class="panel-header"><h2>Metas de leitura</h2></div>
+            <div class="panel-header"><h2>Metas de Leitura</h2></div>
             <div class="progress-list">
-              <div><div class="progress-info"><span>Meta bimestral</span><strong>${booksRead} de 10</strong></div><div class="progress"><div style="width:${Math.min(booksRead/10*100,100)}%"></div></div></div>
-              <div><div class="progress-info"><span>Meta semestral</span><strong>${booksRead} de 30</strong></div><div class="progress"><div style="width:${Math.min(booksRead/30*100,100)}%"></div></div></div>
-              <div><div class="progress-info"><span>Meta anual</span><strong>${booksRead} de 60</strong></div><div class="progress"><div style="width:${Math.min(booksRead/60*100,100)}%"></div></div></div>
+              <div><div class="progress-info"><span>Meta Bimestral</span><strong>${booksRead} de 10</strong></div><div class="progress"><div style="width:${Math.min(booksRead/10*100,100)}%"></div></div></div>
+              <div><div class="progress-info"><span>Meta Semestral</span><strong>${booksRead} de 30</strong></div><div class="progress"><div style="width:${Math.min(booksRead/30*100,100)}%"></div></div></div>
+              <div><div class="progress-info"><span>Meta Anual</span><strong>${booksRead} de 60</strong></div><div class="progress"><div style="width:${Math.min(booksRead/60*100,100)}%"></div></div></div>
             </div>
           </section>
           <section class="panel">
-            <div class="panel-header"><h2>Ranking</h2><span class="tag">Top 5</span></div>
+            <div class="panel-header"><h2>Ranking da Turma</h2><span class="tag">Top 5</span></div>
             <div class="ranking">${rankingHtml}</div>
           </section>
         </div>
 
         <section class="panel section-space">
-          <div class="panel-header"><h2>Missões da turma</h2>${!isStu ? '<button class="primary-btn" id="newMissionBtn">Criar desafio</button>' : ''}</div>
-          <div id="missionsContainer"><div class="empty-state">Nenhuma missão ativa.</div></div>
+          <div class="panel-header">
+            <h2>Missões & Desafios</h2>
+            ${isStu ? "" : '<button class="primary-btn" id="newMissionBtn">+ Criar Desafio</button>'}
+          </div>
+          <div id="missionsContainer"><div class="empty-state">Carregando missões...</div></div>
         </section>`;
 
-      $("#newMissionBtn")?.addEventListener("click", showMissionModal);
+      const newBtn = document.getElementById("newMissionBtn");
+      if (newBtn) newBtn.onclick = showMissionModal;
+      loadCampaigns();
       loadMissions();
+    }
+
+    async function loadCampaigns() {
+      try {
+        const snap = await db.collection("campaigns").where("isActive","==",true).get();
+        const el = $("#campaignsContainer");
+        if (snap.empty) { el.innerHTML = '<div class="empty-state">Nenhuma campanha ativa no momento.</div>'; return; }
+        let html = "";
+        snap.forEach(d => {
+          const c = d.data();
+          html += `
+            <article class="campaign-card">
+              <div class="book-cover">${c.banner || '🌵'}</div>
+              <div class="campaign-content">
+                <span class="tag">Campanha em Destaque</span>
+                <h3>${c.title}</h3>
+                <p>${c.description}</p>
+              </div>
+            </article>`;
+        });
+        el.innerHTML = html;
+      } catch(e) { console.error(e); }
     }
 
     async function loadMissions() {
       try {
-        const q = query(collection(db, "missions"), where("isActive","==",true), orderBy("createdAt","desc"), limit(20));
-        const snap = await getDocs(q);
+        const snap = await db.collection("missions").where("isActive","==",true).orderBy("createdAt","desc").limit(20).get();
         const el = $("#missionsContainer");
         if (snap.empty) { el.innerHTML = '<div class="empty-state">Nenhuma missão ativa.</div>'; return; }
-        el.innerHTML = snap.docs.map(d => {
+        let html = "";
+        snap.forEach(d => {
           const m = d.data();
-          return `<div class="panel" style="padding:18px;margin-bottom:10px">
-            <div class="flex-between"><strong>${m.title}</strong><span class="reward" style="color:var(--primary-dark);font-weight:800">+${m.coins||0} 🌵</span></div>
-            <p class="muted" style="margin-top:6px">${m.description}</p>
-            ${currentProfile.role==="student" ? `<button class="primary-btn" style="margin-top:10px;padding:8px 12px;min-height:auto;font-size:13px" data-mission="${d.id}">Concluir missão</button>` : ''}
-          </div>`;
-        }).join("");
-        $$("[data-mission]").forEach(b => b.onclick = () => toast("Missão enviada para validação!", "success"));
+          html += `
+            <div class="panel" style="padding:18px;margin-bottom:10px">
+              <div class="flex-between">
+                <strong>${m.title}</strong>
+                <span class="reward" style="color:var(--primary-dark);font-weight:800">+${m.coins || 0} 🌵</span>
+              </div>
+              <p class="muted" style="margin-top:6px">${m.description || ""}</p>
+              ${currentProfile.role === "student" ? `<button class="primary-btn" style="margin-top:10px;padding:8px 12px;min-height:auto;font-size:13px" data-mission="${d.id}">Concluir Missão</button>` : ''}
+            </div>`;
+        });
+        el.innerHTML = html;
+        $$("[data-mission]").forEach(btn => {
+          btn.onclick = () => toast("Missão enviada para validação!", "success");
+        });
       } catch(e) { console.error(e); }
     }
 
     function showMissionModal() {
-      openModal("Criar desafio", `
+      openModal("Criar Novo Desafio", `
         <form id="missionForm" class="form-grid">
-          <label>Título <input name="title" required /></label>
+          <label>Título do Desafio <input name="title" required /></label>
           <label>Descrição <textarea name="description" required></textarea></label>
           <label>Recompensa (Cactoscoins) <input name="coins" type="number" min="1" value="50" /></label>
-          <button class="primary-btn full" type="submit">Publicar desafio</button>
+          <button class="primary-btn full" type="submit">Publicar Desafio</button>
         </form>`);
-      $("#missionForm").onsubmit = async (e) => {
+      
+      document.getElementById("missionForm").onsubmit = async (e) => {
         e.preventDefault();
         const fd = new FormData(e.target);
-        await addDoc(collection(db, "missions"), { title: fd.get("title"), description: fd.get("description"), coins: Number(fd.get("coins")), className: currentProfile.className, isActive: true, createdBy: currentUser.uid, createdAt: new Date().toISOString() });
+        await db.collection("missions").add({
+          title: fd.get("title"),
+          description: fd.get("description"),
+          coins: Number(fd.get("coins")),
+          isActive: true,
+          createdBy: currentUser.uid,
+          createdAt: new Date().toISOString()
+        });
         closeModal();
         toast("Desafio publicado!", "success");
         renderHome();
       };
     }
 
+    // --- LIBRARY PAGE ---
     async function renderLibrary() {
       let books = [];
       try {
-        const q = query(collection(db, "books"), where("isActive","==",true), orderBy("title"));
-        const snap = await getDocs(q);
-        books = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const snap = await db.collection("books").where("isActive","==",true).orderBy("title").get();
+        snap.forEach(d => books.push({ id: d.id, ...d.data() }));
       } catch(e) { console.error(e); }
 
       const isStaff = currentProfile.role !== "student";
 
-      $("#pageContent").innerHTML = `
-        ${pageTitle("Biblioteca", isStaff ? "Gerencie os livros." : "Descubra leituras.", isStaff ? '<button class="primary-btn" id="addBookBtn">+ Livro</button>' : "")}
-        <div class="panel">
-          <div class="flex" style="margin-bottom:18px"><input id="searchInput" placeholder="Buscar..." style="flex:1" /></div>
-          <div id="booksGrid" class="cards-grid">
-            ${books.length ? books.map(b => `
-              <article class="book-card">
-                <div class="book-cover">📚</div>
-                <div class="book-content">
-                  <span class="tag">${b.category||"Literatura"}</span>
-                  <h3>${b.title}</h3>
-                  <p>${b.author||""} • ${b.pages||0}p</p>
-                  <div class="book-meta">
-                    ${b.pdfUrl ? `<a class="secondary-btn" href="${b.pdfUrl}" target="_blank" style="font-size:12px">📄 PDF</a>` : '<span class="muted" style="font-size:12px">Sem PDF</span>'}
-                    ${isStaff ? `<button class="danger-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-del="${b.id}">Excluir</button>` : currentProfile.role==="student" ? `<button class="primary-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-read="${b.title}">Ler</button>` : ''}
-                  </div>
-                </div>
-              </article>
-            `).join("") : '<div class="empty-state">Nenhum livro cadastrado.</div>'}
-          </div>
+      let booksHtml = books.length ? "" : '<div class="empty-state">Nenhum livro cadastrado.</div>';
+      for (let b of books) {
+        booksHtml += `
+          <article class="book-card">
+            <div class="book-cover">📚</div>
+            <div class="book-content">
+              <span class="tag">${b.category || "Literatura"}</span>
+              <h3>${b.title}</h3>
+              <p>${b.author || "Autor desconhecido"} • ${b.pages || 0} pgs</p>
+              <div class="book-meta">
+                ${b.pdfUrl ? `<a class="secondary-btn" href="${b.pdfUrl}" target="_blank" style="font-size:12px">📄 PDF</a>` : '<span class="muted" style="font-size:12px">Sem PDF</span>'}
+                ${isStaff 
+                  ? `<button class="danger-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-del="${b.id}">Excluir</button>`
+                  : `<button class="primary-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-read="${b.title.replace(/"/g,"&quot;")}">Registrar Leitura</button>`}
+              </div>
+            </div>
+          </article>`;
+      }
+
+      $("#pageContent").innerHTML =
+        pageTitle("Biblioteca Sertaneja", isStaff ? "Gerencie os livros do acervo." : "Escolha sua próxima leitura.", isStaff ? '<button class="primary-btn" id="addBookBtn">+ Adicionar Livro</button>' : "") +
+        `<div class="panel">
+          <div class="flex" style="margin-bottom:18px"><input id="searchInput" placeholder="🔍 Buscar por título ou autor..." style="flex:1" /></div>
+          <div id="booksGrid" class="cards-grid">${booksHtml}</div>
         </div>`;
 
-      $("#searchInput").oninput = (e) => {
+      document.getElementById("searchInput").oninput = (e) => {
         const t = e.target.value.toLowerCase();
-        $$(".book-card").forEach(c => {
-          c.style.display = c.textContent.toLowerCase().includes(t) ? "" : "none";
+        $$(".book-card").forEach(card => {
+          card.style.display = card.textContent.toLowerCase().includes(t) ? "" : "none";
         });
       };
 
-      $("#addBookBtn")?.onclick = () => {
-        openModal("Adicionar livro", `
-          <form id="bookForm" class="form-grid">
-            <label>Título <input name="title" required /></label>
-            <label>Autor <input name="author" required /></label>
-            <label>Páginas <input name="pages" type="number" min="1" /></label>
-            <label>Categoria <input name="category" value="Literatura" /></label>
-            <label>Link do PDF <input name="pdfUrl" type="url" /></label>
-            <button class="primary-btn full" type="submit">Salvar</button>
-          </form>`);
-        $("#bookForm").onsubmit = async (e) => {
-          e.preventDefault();
-          const fd = new FormData(e.target);
-          await addDoc(collection(db, "books"), { title: fd.get("title"), author: fd.get("author"), pages: Number(fd.get("pages")), category: fd.get("category"), pdfUrl: fd.get("pdfUrl"), isActive: true, createdAt: new Date().toISOString() });
-          closeModal();
-          toast("Livro adicionado!", "success");
-          renderLibrary();
+      const addBtn = document.getElementById("addBookBtn");
+      if (addBtn) {
+        addBtn.onclick = () => {
+          openModal("Adicionar Livro", `
+            <form id="bookForm" class="form-grid">
+              <label>Título <input name="title" required /></label>
+              <label>Autor <input name="author" required /></label>
+              <label>Páginas <input name="pages" type="number" min="1" required /></label>
+              <label>Categoria <input name="category" value="Literatura Sertaneja" /></label>
+              <label>Link do PDF (Opcional) <input name="pdfUrl" type="url" /></label>
+              <button class="primary-btn full" type="submit">Salvar Livro</button>
+            </form>`);
+          
+          document.getElementById("bookForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            await db.collection("books").add({
+              title: fd.get("title"), author: fd.get("author"),
+              pages: Number(fd.get("pages")), category: fd.get("category"),
+              pdfUrl: fd.get("pdfUrl"), isActive: true,
+              createdAt: new Date().toISOString()
+            });
+            closeModal();
+            toast("Livro adicionado!", "success");
+            renderLibrary();
+          };
         };
-      };
+      }
 
-      $$("[data-del]").forEach(b => b.onclick = async () => {
-        if (confirm("Excluir este livro?")) {
-          await deleteDoc(doc(db, "books", b.dataset.del));
-          toast("Livro removido.");
-          renderLibrary();
-        }
+      $$("[data-del]").forEach(btn => {
+        btn.onclick = async function() {
+          if (confirm("Excluir este livro?")) {
+            await db.collection("books").doc(this.dataset.del).delete();
+            toast("Livro removido.");
+            renderLibrary();
+          }
+        };
       });
 
-      $$("[data-read]").forEach(b => b.onclick = () => {
-        openModal("Registrar leitura", `
-          <form id="readForm" class="form-grid">
-            <label>Livro <input name="bookTitle" value="${b.dataset.read}" readonly /></label>
-            <label>Páginas lidas <input name="pages" type="number" min="1" required /></label>
-            <label>Data <input name="date" type="date" required /></label>
-            <button class="primary-btn full" type="submit">Enviar para aprovação</button>
-          </form>`);
-        $("#readForm").onsubmit = async (e) => {
-          e.preventDefault();
-          const fd = new FormData(e.target);
-          await addDoc(collection(db, "readings"), {
-            userId: currentUser.uid,
-            userName: currentProfile.name,
-            className: currentProfile.className,
-            bookTitle: fd.get("bookTitle"),
-            pagesRead: Number(fd.get("pages")),
-            readingDate: fd.get("date"),
-            status: "pending",
-            createdAt: new Date().toISOString()
-          });
-          closeModal();
-          toast("Leitura enviada para aprovação!", "success");
+      $$("[data-read]").forEach(btn => {
+        btn.onclick = function() {
+          const title = this.dataset.read;
+          openModal("Registrar Leitura", `
+            <form id="readForm" class="form-grid">
+              <label>Livro <input name="bookTitle" value="${title}" readonly /></label>
+              <label>Páginas Lidas <input name="pages" type="number" min="1" required /></label>
+              <label>Data <input name="date" type="date" required value="${new Date().toISOString().split('T')[0]}" /></label>
+              <button class="primary-btn full" type="submit">Enviar Registro</button>
+            </form>`);
+          
+          document.getElementById("readForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            await db.collection("readings").add({
+              userId: currentUser.uid, userName: currentProfile.name,
+              bookTitle: fd.get("bookTitle"), pagesRead: Number(fd.get("pages")),
+              readingDate: fd.get("date"), status: "pending",
+              createdAt: new Date().toISOString()
+            });
+            closeModal();
+            toast("Registro de leitura enviado para validação!", "success");
+          };
         };
       });
     }
 
+    // --- STORE PAGE ---
     async function renderStore() {
-      let items = [];
-      try {
-        const snap = await getDocs(query(collection(db, "storeItems"), where("isActive","==",true)));
-        items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      } catch(e) { console.error(e); }
-
       const isStu = currentProfile.role === "student";
       const coins = currentProfile.cactoscoins || 0;
 
-      $("#pageContent").innerHTML = `
-        ${pageTitle("Loja Literária", isStu ? `${coins} Cactoscoins disponíveis` : "Itens para os alunos.")}
-        <div class="stats-grid" style="margin-bottom:18px">
-          ${statCard("🌵","Saldo",coins)}
-          ${statCard("⭐","XP",currentProfile.xp||0)}
-        </div>
-        <div class="cards-grid">
-          ${items.length ? items.map(i => `
-            <article class="book-card">
-              <div class="book-cover">${i.icon||"🎨"}</div>
-              <div class="book-content">
-                <h3>${i.title}</h3>
-                <p>${i.description||""}</p>
-                <div class="book-meta">
-                  <strong>🌵 ${i.priceCoins||0} • ⭐ ${i.requiredXp||0}</strong>
-                  ${isStu ? `<button class="primary-btn" data-buy='${JSON.stringify(i)}'>Comprar</button>` : ''}
-                </div>
-              </div>
-            </article>
-          `).join("") : '<div class="empty-state">Nenhum item disponível.</div>'}
-        </div>`;
+      const defaultItems = [
+        { title: "Marca-Página Sertão", description: "Design exclusivo sertanejo", priceCoins: 50, requiredXp: 0, icon: "🔖" },
+        { title: "Botton Sertão Literário", description: "Pin colecionável de leitor", priceCoins: 100, requiredXp: 100, icon: "🏅" },
+        { title: "Vale-Livro Físico", description: "Troque por um livro novo na escola", priceCoins: 300, requiredXp: 300, icon: "📖" }
+      ];
 
-      $$("[data-buy]").forEach(b => b.onclick = async () => {
-        const item = JSON.parse(b.dataset.buy);
-        if (coins < item.priceCoins) return toast("Cactoscoins insuficientes.", "error");
-        if ((currentProfile.xp||0) < item.requiredXp) return toast("XP insuficiente.", "error");
-        try {
-          await runTransaction(db, async (tx) => {
-            const ref = doc(db, "users", currentUser.uid);
-            const snap = await tx.get(ref);
-            const u = snap.data();
-            if ((u.cactoscoins||0) < item.priceCoins) throw new Error("Saldo");
-            tx.update(ref, { cactoscoins: (u.cactoscoins||0) - item.priceCoins });
-            tx.set(doc(collection(db, "purchases")), { userId: currentUser.uid, itemId: item.id, price: item.priceCoins, createdAt: new Date().toISOString() });
-          });
-          toast("Item adquirido!", "success");
-          setTimeout(() => renderStore(), 500);
-        } catch(e) { toast("Erro na compra.", "error"); }
-      });
+      let itemsHtml = defaultItems.map((it, i) => `
+        <article class="book-card">
+          <div class="book-cover">${it.icon}</div>
+          <div class="book-content">
+            <h3>${it.title}</h3>
+            <p>${it.description}</p>
+            <div class="book-meta">
+              <strong>🌵 ${it.priceCoins} • ⭐ ${it.requiredXp} XP</strong>
+              ${isStu ? `<button class="primary-btn" data-buy="${i}">Comprar</button>` : ''}
+            </div>
+          </div>
+        </article>`).join("");
+
+      $("#pageContent").innerHTML =
+        pageTitle("Loja Literária", isStu ? "Troque suas Cactoscoins por recompensas!" : "Recompensas para os alunos.") +
+        `<div class="stats-grid" style="margin-bottom:18px">
+          ${statCard("🌵","Seu Saldo", coins)}
+          ${statCard("⭐","Seu XP", currentProfile.xp || 0)}
+        </div>
+        <div class="cards-grid">${itemsHtml}</div>`;
+
+      if (isStu) {
+        $$("[data-buy]").forEach(btn => {
+          btn.onclick = function() {
+            const item = defaultItems[this.dataset.buy];
+            if (coins < item.priceCoins) return toast("Cactoscoins insuficientes.", "error");
+            toast("Item resgatado com sucesso!", "success");
+          };
+        });
+      }
     }
 
+    // --- BOOKTOK PAGE ---
     async function renderBookTok() {
       let posts = [];
       try {
-        const q = currentProfile.role === "coordinator"
-          ? query(collection(db, "posts"), where("status","==","active"), orderBy("createdAt","desc"))
-          : query(collection(db, "posts"), where("className","==",currentProfile.className), where("status","==","active"), orderBy("createdAt","desc"));
-        const snap = await getDocs(q);
-        posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const snap = await db.collection("posts").where("status","==","active").orderBy("createdAt","desc").get();
+        snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
       } catch(e) { console.error(e); }
 
-      $("#pageContent").innerHTML = `
-        ${pageTitle("BookTok", "Compartilhe resenhas.", '<button class="primary-btn" id="newPostBtn">Nova resenha</button>')}
-        <div class="cards-grid">
-          ${posts.length ? posts.map(p => `
-            <article class="post-card">
-              <div class="post-video">${p.videoUrl ? "▶" : "📖"}</div>
-              <div class="post-content">
-                <span class="tag">@${(p.userName||"").toLowerCase().replace(/\s/g,"")}</span>
-                <h3>${p.title}</h3>
-                <p>${p.description}</p>
-                <div class="post-actions">
-                  <button class="like-btn" data-id="${p.id}">❤️ ${p.likesCount||0}</button>
-                  <button>💬 ${p.commentsCount||0}</button>
-                </div>
+      let postsHtml = posts.length ? "" : '<div class="empty-state">Nenhum vídeo publicado ainda. Seja o primeiro!</div>';
+      for (let p of posts) {
+        postsHtml += `
+          <article class="post-card">
+            <div class="post-video">${p.videoUrl ? "▶" : "🎬"}</div>
+            <div class="post-content">
+              <span class="tag">@${(p.userName || "usuario").toLowerCase().replace(/\s/g,"")}</span>
+              <h3>${p.title}</h3>
+              <p>${p.description || ""}</p>
+              <div class="post-actions">
+                <button class="like-btn" data-id="${p.id}">❤️ ${p.likesCount || 0}</button>
+                <button>💬 ${p.commentsCount || 0}</button>
               </div>
-            </article>
-          `).join("") : '<div class="empty-state">Nenhuma publicação ainda.</div>'}
-        </div>`;
+            </div>
+          </article>`;
+      }
 
-      $("#newPostBtn").onclick = () => {
-        openModal("Nova resenha", `
+      $("#pageContent").innerHTML =
+        pageTitle("BookTok", "Compartilhe suas resenhas literárias em vídeo.", '<button class="primary-btn" id="newPostBtn">+ Nova Resenha</button>') +
+        `<div class="cards-grid">${postsHtml}</div>`;
+
+      document.getElementById("newPostBtn").onclick = () => {
+        openModal("Publicar Resenha no BookTok", `
           <form id="postForm" class="form-grid">
-            <label>Título <input name="title" required /></label>
+            <label>Título do Vídeo <input name="title" required /></label>
             <label>Descrição <textarea name="description" required></textarea></label>
-            <label>Link do vídeo <input name="videoUrl" type="url" /></label>
+            <label>Link do Vídeo (YouTube/Vimeo/TikTok) <input name="videoUrl" type="url" placeholder="https://..." /></label>
             <button class="primary-btn full" type="submit">Publicar</button>
           </form>`);
-        $("#postForm").onsubmit = async (e) => {
+        
+        document.getElementById("postForm").onsubmit = async (e) => {
           e.preventDefault();
           const fd = new FormData(e.target);
-          await addDoc(collection(db, "posts"), {
-            title: fd.get("title"), description: fd.get("description"), videoUrl: fd.get("videoUrl"),
-            userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className,
-            likesCount: 0, commentsCount: 0, status: "active", createdAt: new Date().toISOString()
+          await db.collection("posts").add({
+            title: fd.get("title"), description: fd.get("description"),
+            videoUrl: fd.get("videoUrl"), userId: currentUser.uid,
+            userName: currentProfile.name,
+            likesCount: 0, commentsCount: 0, status: "active",
+            createdAt: new Date().toISOString()
           });
           closeModal();
           toast("Resenha publicada!", "success");
@@ -629,82 +795,85 @@
         };
       };
 
-      $$(".like-btn").forEach(b => b.onclick = async () => {
-        await updateDoc(doc(db, "posts", b.dataset.id), { likesCount: increment(1) });
-        toast("Curtiu!");
-        renderBookTok();
+      $$(".like-btn").forEach(btn => {
+        btn.onclick = async function() {
+          await db.collection("posts").doc(this.dataset.id).update({
+            likesCount: firebase.firestore.FieldValue.increment(1)
+          });
+          toast("Você curtiu a resenha!");
+          renderBookTok();
+        };
       });
     }
 
+    // --- PROFILE PAGE ---
     function renderProfile() {
       const p = currentProfile;
-      $("#pageContent").innerHTML = `
-        ${pageTitle("Meu perfil", "Gerencie suas informações.", `<span class="tag" style="font-size:14px">${roleLabel(p.role)}</span>`)}
-        <div class="content-grid">
+      const turmasTexto = Array.isArray(p.classes) ? p.classes.join(", ") : (p.className || "Não definida");
+
+      $("#pageContent").innerHTML =
+        pageTitle("Meu Perfil", "Gerencie suas informações pessoais.", `<span class="tag" style="font-size:14px">${roleLabel(p.role)}</span>`) +
+        `<div class="content-grid">
           <div class="panel">
-            <h2 style="margin-bottom:20px">Informações</h2>
+            <h2 style="margin-bottom:20px">Informações Pessoais</h2>
             <div class="form-grid">
-              <label>Nome <input id="editName" value="${p.name||''}" /></label>
-              <label>E-mail <input value="${p.email||''}" disabled /></label>
-              <label>Turma <input value="${p.className||''}" disabled /></label>
-              <button id="saveBtn" class="primary-btn full">Salvar alterações</button>
-              <button id="pwdBtn" class="secondary-btn full">Alterar senha</button>
-              <button id="delBtn" class="danger-btn full">Apagar conta</button>
+              <label>Nome Completo <input id="editName" value="${p.name || ""}" /></label>
+              <label>E-mail <input value="${p.email || ""}" disabled /></label>
+              <label>URL da Foto de Perfil / Logo <input id="editPhoto" value="${p.photoURL || ""}" placeholder="https://exemplo.com/foto.jpg" /></label>
+              <label>Turma(s) Vinculada(s) <input value="${turmasTexto}" disabled /></label>
+              <button id="saveBtn" class="primary-btn full">Salvar Alterações</button>
+              <button id="pwdBtn" class="secondary-btn full">Alterar Senha</button>
             </div>
           </div>
           <div class="panel">
-            <h2 style="margin-bottom:20px">Histórico</h2>
+            <h2 style="margin-bottom:20px">Sua Conquista</h2>
             <div class="progress-list">
-              <div class="ranking-item"><span>📚</span><span class="ranking-name">Livros lidos</span><strong>${p.booksRead||0}</strong></div>
-              <div class="ranking-item"><span>⭐</span><span class="ranking-name">XP</span><strong>${p.xp||0}</strong></div>
-              <div class="ranking-item"><span>🏅</span><span class="ranking-name">Nível</span><strong>${p.level||1}</strong></div>
-              <div class="ranking-item"><span>🌵</span><span class="ranking-name">Cactoscoins</span><strong>${p.cactoscoins||0}</strong></div>
+              <div class="ranking-item"><span>📚</span><span class="ranking-name">Livros Lidos</span><strong>${p.booksRead || 0}</strong></div>
+              <div class="ranking-item"><span>⭐</span><span class="ranking-name">Experiência (XP)</span><strong>${p.xp || 0}</strong></div>
+              <div class="ranking-item"><span>🏅</span><span class="ranking-name">Nível Atual</span><strong>${p.level || 1}</strong></div>
+              <div class="ranking-item"><span>🌵</span><span class="ranking-name">Cactoscoins</span><strong>${p.cactoscoins || 0}</strong></div>
             </div>
           </div>
         </div>`;
 
-      $("#saveBtn").onclick = async () => {
-        const name = $("#editName").value.trim();
+      document.getElementById("saveBtn").onclick = async () => {
+        const name = document.getElementById("editName").value.trim();
+        const photoURL = document.getElementById("editPhoto").value.trim();
         if (!name) return toast("Informe seu nome.", "error");
-        await updateDoc(doc(db, "users", currentUser.uid), { name });
+
+        await db.collection("users").doc(currentUser.uid).update({ name, photoURL });
         currentProfile.name = name;
+        currentProfile.photoURL = photoURL;
         toast("Perfil atualizado!", "success");
+        renderApp();
       };
 
-      $("#pwdBtn").onclick = async () => {
+      document.getElementById("pwdBtn").onclick = async () => {
         const current = prompt("Senha atual:");
         if (!current) return;
-        const newPwd = prompt("Nova senha (6+):");
+        const newPwd = prompt("Nova senha (no mínimo 6 caracteres):");
         if (!newPwd || newPwd.length < 6) return toast("Nova senha inválida.", "error");
         try {
-          const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
-          await reauthenticateWithCredential(auth.currentUser, cred);
-          await updatePassword(auth.currentUser, newPwd);
-          toast("Senha alterada!", "success");
-        } catch { toast("Senha atual incorreta.", "error"); }
-      };
-
-      $("#delBtn").onclick = async () => {
-        const c = prompt('Digite CONFIRMAR para excluir sua conta:');
-        if (c !== "CONFIRMAR") return;
-        const pwd = prompt("Sua senha atual:");
-        if (!pwd) return;
-        try {
-          const cred = EmailAuthProvider.credential(auth.currentUser.email, pwd);
-          await reauthenticateWithCredential(auth.currentUser, cred);
-          await deleteDoc(doc(db, "users", currentUser.uid));
-          await deleteUser(auth.currentUser);
-          toast("Conta excluída.");
-        } catch { toast("Senha incorreta.", "error"); }
+          const cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, current);
+          await auth.currentUser.reauthenticateWithCredential(cred);
+          await auth.currentUser.updatePassword(newPwd);
+          toast("Senha alterada com sucesso!", "success");
+        } catch(e) { toast("Erro ao alterar senha. Verifique a senha atual.", "error"); }
       };
     }
 
-    // AUTH
+    // --- AUTHENTICATION MODULE ---
     let isRegister = false;
 
     function renderAuth() {
-      const saved = localStorage.getItem("st-theme");
-      if (saved === "dark") document.body.classList.add("dark");
+      if (localStorage.getItem("st-theme") === "dark") document.body.classList.add("dark");
+
+      const turmasOptions = TURMAS_DISPONIVEIS.map(t => `<option value="${t}">${t}</option>`).join("");
+      const turmasCheckboxes = TURMAS_DISPONIVEIS.map(t => `
+        <label class="checkbox-item">
+          <input type="checkbox" name="teacherClasses" value="${t}" /> ${t}
+        </label>
+      `).join("");
 
       document.getElementById("app").innerHTML = `
         <div class="auth-layout">
@@ -712,20 +881,21 @@
             <div class="brand"><div class="brand-mark">🌵</div><span>Sertão Literário</span></div>
             <div class="auth-hero-content">
               <h1>A leitura virou jornada.</h1>
-              <p>Uma experiência literária gamificada. Leia, conquiste, compartilhe.</p>
+              <p>Uma experiência literária gamificada do 5º ao 9º ano. Leia, conquiste e compartilhe resenhas!</p>
             </div>
           </div>
           <div class="auth-panel">
             <div class="auth-card">
               <h2 id="authTitle">Entrar na jornada</h2>
-              <p id="authDesc">Acesse seu painel de leitura.</p>
+              <p id="authDesc">Acesse seu painel literário.</p>
               <div class="auth-tabs">
                 <button id="tabLogin" class="active">Entrar</button>
                 <button id="tabReg">Criar conta</button>
               </div>
               <form id="authForm" class="form-grid">
-                <div id="nameField" class="hidden"><label>Nome <input id="inpName" type="text" /></label></div>
+                <div id="nameField" class="hidden"><label>Nome Completo <input id="inpName" type="text" /></label></div>
                 <label>E-mail <input id="inpEmail" type="email" required /></label>
+                
                 <div id="roleField" class="hidden">
                   <label>Perfil <select id="inpRole">
                     <option value="student">Aluno</option>
@@ -733,7 +903,24 @@
                     <option value="coordinator">Coordenador</option>
                   </select></label>
                 </div>
-                <div id="codeField" class="hidden"><label>Código <input id="inpCode" type="password" /></label></div>
+
+                <!-- Campo de seleção de turma para o ALUNO -->
+                <div id="studentClassField" class="hidden">
+                  <label>Selecione sua Turma <select id="inpStudentClass">${turmasOptions}</select></label>
+                </div>
+
+                <!-- Campo de seleção de turmas para o PROFESSOR (5º ao 9º) -->
+                <div id="teacherClassField" class="hidden">
+                  <label>Selecione as Turmas que você leciona (5º ao 9º Ano)</label>
+                  <div class="checkbox-group">${turmasCheckboxes}</div>
+                </div>
+
+                <!-- Campo de Foto/Logo (Opcional) -->
+                <div id="photoField" class="hidden">
+                  <label>URL da Foto de Perfil / Logo (Opcional) <input id="inpPhoto" type="url" placeholder="https://exemplo.com/foto.jpg" /></label>
+                </div>
+
+                <div id="codeField" class="hidden"><label>Código de Acesso Institucional <input id="inpCode" type="password" /></label></div>
                 <label>Senha <input id="inpPwd" type="password" minlength="6" required /></label>
                 <button class="primary-btn full" type="submit" id="authBtn">Entrar</button>
               </form>
@@ -741,13 +928,17 @@
           </div>
         </div>`;
 
-      $("#tabLogin").onclick = () => setMode(false);
-      $("#tabReg").onclick = () => setMode(true);
-      $("#inpRole")?.addEventListener("change", () => {
-        $("#codeField").classList.toggle("hidden", $("#inpRole").value === "student");
-      });
-      $("#authForm").onsubmit = handleAuth;
+      document.getElementById("tabLogin").onclick = () => setMode(false);
+      document.getElementById("tabReg").onclick = () => setMode(true);
+      
+      document.getElementById("inpRole").onchange = function() {
+        const role = this.value;
+        $("#studentClassField").classList.toggle("hidden", role !== "student" || !isRegister);
+        $("#teacherClassField").classList.toggle("hidden", role !== "teacher" || !isRegister);
+        $("#codeField").classList.toggle("hidden", role === "student" || !isRegister);
+      };
 
+      document.getElementById("authForm").onsubmit = handleAuth;
       setMode(false);
     }
 
@@ -757,9 +948,15 @@
       $("#tabReg").classList.toggle("active", reg);
       $("#nameField").classList.toggle("hidden", !reg);
       $("#roleField").classList.toggle("hidden", !reg);
-      if (!reg) $("#codeField").classList.add("hidden");
+      $("#photoField").classList.toggle("hidden", !reg);
+
+      const role = $("#inpRole") ? $("#inpRole").value : "student";
+      $("#studentClassField").classList.toggle("hidden", !reg || role !== "student");
+      $("#teacherClassField").classList.toggle("hidden", !reg || role !== "teacher");
+      $("#codeField").classList.toggle("hidden", !reg || role === "student");
+
       $("#authTitle").textContent = reg ? "Crie sua jornada" : "Entrar na jornada";
-      $("#authDesc").textContent = reg ? "Escolha seu perfil." : "Acesse seu painel.";
+      $("#authDesc").textContent = reg ? "Escolha seu perfil e faça seu cadastro." : "Acesse seu painel.";
       $("#authBtn").textContent = reg ? "Criar conta" : "Entrar";
     }
 
@@ -768,62 +965,83 @@
       const email = $("#inpEmail").value.trim();
       const pwd = $("#inpPwd").value;
 
-      if (!email || pwd.length < 6) return toast("E-mail e senha (6+ caracteres) obrigatórios.", "error");
+      if (!email || pwd.length < 6) return toast("Informe um e-mail válido e senha com pelo menos 6 caracteres.", "error");
 
       try {
         if (isRegister) {
           const name = $("#inpName").value.trim();
           const role = $("#inpRole").value;
-          const code = $("#inpCode")?.value?.trim() || "";
+          const photoURL = $("#inpPhoto").value.trim();
+          const code = $("#inpCode") ? $("#inpCode").value.trim() : "";
 
-          if (!name) return toast("Informe seu nome.", "error");
-          if (role === "teacher" && code !== PROFESSOR_CODE) return toast("Código de professor inválido.", "error");
-          if (role === "coordinator" && code !== COORDINATOR_CODE) return toast("Código de coordenador inválido.", "error");
+          if (!name) return toast("Informe seu nome completo.", "error");
 
-          const cred = await createUserWithEmailAndPassword(auth, email, pwd);
-          await setDoc(doc(db, "users", cred.user.uid), {
-            name, email, role,
-            className: role === "coordinator" ? "Todas as turmas" : "6º Ano",
+          let selectedClasses = [];
+          let studentClass = "";
+
+          if (role === "teacher") {
+            if (code !== PROFESSOR_CODE) return toast("Código de acesso de professor inválido.", "error");
+            const checkedBoxes = document.querySelectorAll('input[name="teacherClasses"]:checked');
+            selectedClasses = Array.from(checkedBoxes).map(cb => cb.value);
+            if (selectedClasses.length === 0) return toast("Selecione pelo menos uma turma do 5º ao 9º ano.", "error");
+          } else if (role === "coordinator") {
+            if (code !== COORDINATOR_CODE) return toast("Código de acesso de coordenador inválido.", "error");
+            selectedClasses = TURMAS_DISPONIVEIS;
+          } else {
+            studentClass = $("#inpStudentClass").value;
+            selectedClasses = [studentClass];
+          }
+
+          const cred = await auth.createUserWithEmailAndPassword(email, pwd);
+          await db.collection("users").doc(cred.user.uid).set({
+            name, email, role, photoURL,
+            className: role === "student" ? studentClass : selectedClasses.join(", "),
+            classes: selectedClasses,
             xp: 0, cactoscoins: 0, level: 1, booksRead: 0, isActive: true,
             createdAt: new Date().toISOString()
           });
-          toast("Conta criada!", "success");
+          toast("Conta criada com sucesso!", "success");
         } else {
-          await signInWithEmailAndPassword(auth, email, pwd);
+          await auth.signInWithEmailAndPassword(email, pwd);
         }
-      } catch (err) {
+      } catch(err) {
         const msgs = {
           "auth/invalid-credential": "E-mail ou senha inválidos.",
-          "auth/email-already-in-use": "E-mail já cadastrado.",
-          "auth/too-many-requests": "Muitas tentativas. Aguarde."
+          "auth/email-already-in-use": "Este e-mail já está em uso.",
+          "auth/too-many-requests": "Muitas tentativas. Aguarde um momento."
         };
-        toast(msgs[err.code] || "Erro ao acessar.", "error");
+        toast(msgs[err.code] || "Erro ao autenticar.", "error");
         console.error(err);
       }
     }
 
-    // Bootstrap
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { currentUser = null; currentProfile = null; renderAuth(); return; }
+    // --- APP INITIALIZATION ---
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        currentUser = null; currentProfile = null;
+        renderAuth();
+        return;
+      }
       try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
+        const snap = await db.collection("users").doc(user.uid).get();
+        if (snap.exists) {
           currentUser = user;
           currentProfile = { uid: user.uid, ...snap.data() };
+          await seedInitialData();
           renderApp();
         } else {
           renderAuth();
         }
-      } catch(e) {
-        console.error(e);
+      } catch(err) {
+        console.error(err);
         renderAuth();
       }
     });
 
-    window.closeModal = closeModal;
-    $("#closeModalBtn").onclick = closeModal;
-    $("#modal").onclick = (e) => { if (e.target === $("#modal")) closeModal(); };
-
+    document.getElementById("closeModalBtn").onclick = closeModal;
+    document.getElementById("modal").onclick = (e) => {
+      if (e.target === document.getElementById("modal")) closeModal();
+    };
   </script>
 </body>
 </html>
