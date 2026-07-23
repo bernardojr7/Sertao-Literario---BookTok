@@ -5,797 +5,239 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sertão Literário</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg: #f7f8fa;
+      --bg: #f8fafc;
       --surface: #ffffff;
-      --surface-2: #f0f2f5;
-      --text: #17202a;
-      --muted: #68717c;
-      --border: #e5e8ec;
-      --primary: #e88917;
-      --primary-dark: #b95f00;
-      --green: #2f9e62;
-      --cyan: #00bcd4;
-      --pink: #e94d89;
-      --danger: #d64545;
-      --shadow: 0 12px 30px rgba(27, 39, 51, .08);
+      --surface2: #f1f5f9;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #f59e0b;
+      --primary-dark: #d97706;
+      --green: #22c55e;
+      --green-dark: #15803d;
+      --cyan: #06b6d4;
+      --pink: #ec4899;
+      --danger: #ef4444;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
       --radius: 22px;
     }
 
     body.dark {
-      --bg: #101419;
-      --surface: #182027;
-      --surface-2: #222c35;
-      --text: #f3f6f8;
-      --muted: #a9b2bb;
-      --border: #303c46;
-      --shadow: 0 12px 30px rgba(0, 0, 0, .28);
+      --bg: #0f172a;
+      --surface: #172033;
+      --surface2: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, sans-serif;
-      transition: background .2s, color .2s;
-    }
-
-    h1, h2, h3, h4 {
-      font-family: "Baloo 2", cursive;
-      margin: 0;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .auth-screen {
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(232, 137, 23, .18), transparent 30%),
-        radial-gradient(circle at 90% 90%, rgba(47, 158, 98, .16), transparent 30%),
-        var(--bg);
-    }
-
-    .auth-card {
-      width: min(100%, 460px);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 30px;
-      box-shadow: var(--shadow);
-    }
-
-    .brand {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .brand img {
-      width: 68px;
-      height: 68px;
-      object-fit: contain;
-      border-radius: 18px;
-    }
-
-    .brand h1 {
-      font-size: 30px;
-      line-height: 1;
-      color: var(--primary);
-    }
-
-    .brand small {
-      color: var(--muted);
-      display: block;
-      margin-top: 5px;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: var(--surface-2);
-      border-radius: 14px;
-      padding: 5px;
-      margin-bottom: 20px;
-    }
-
-    .tabs button {
-      background: transparent;
-      color: var(--muted);
-      border-radius: 10px;
-      padding: 10px;
-      font-weight: 700;
-    }
-
-    .tabs button.active {
-      background: var(--surface);
-      color: var(--primary);
-      box-shadow: 0 3px 12px rgba(0,0,0,.06);
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .field input,
-    .field select,
-    .field textarea {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 12px 14px;
-      outline: none;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.10), transparent 25%), var(--bg);
       color: var(--text);
-      background: var(--surface);
+      transition: background .25s, color .25s;
     }
 
-    .field textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    .hidden { display: none !important; }
 
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: var(--primary);
+    .toast {
+      position: fixed; right: 22px; top: 22px; z-index: 50;
+      max-width: 380px; padding: 16px 20px; border-radius: 14px;
+      color: white; background: #172033; box-shadow: var(--shadow);
+      transform: translateY(-12px); opacity: 0; transition: .25s;
     }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: var(--green-dark); }
+    .toast.error { background: #b91c1c; }
 
-    .btn {
-      border-radius: 13px;
-      padding: 12px 16px;
-      font-weight: 800;
-      transition: transform .2s, opacity .2s;
-    }
+    .auth-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(380px, 0.9fr); }
 
-    .btn:hover {
-      transform: translateY(-1px);
-      opacity: .92;
-    }
-
-    .btn-primary {
-      background: var(--primary);
+    .auth-hero {
+      position: relative; overflow: hidden; padding: 70px clamp(30px, 7vw, 110px);
       color: white;
+      background: linear-gradient(135deg, rgba(15,23,42,0.88), rgba(21,128,61,0.70)),
+                  url('https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1600&q=85') center/cover;
     }
+    .auth-hero::after {
+      content: '🌵'; position: absolute; right: 7%; bottom: -30px;
+      font-size: 180px; opacity: 0.20; transform: rotate(-8deg);
+    }
+    .auth-hero-content { position: relative; z-index: 1; max-width: 620px; margin-top: 18vh; }
+    .auth-hero-content h1 { font-family: 'Baloo 2', cursive; font-size: clamp(50px, 6vw, 80px); line-height: 0.95; margin: 20px 0; }
+    .auth-hero-content p { max-width: 560px; color: rgba(255,255,255,0.85); font-size: 18px; line-height: 1.7; }
 
-    .btn-green {
-      background: var(--green);
-      color: white;
-    }
+    .auth-panel { display: grid; place-items: center; padding: 30px; background: var(--surface); }
+    .auth-card { width: min(100%, 470px); padding: 40px; border: 1px solid var(--border); border-radius: 28px; background: var(--surface); box-shadow: var(--shadow); }
+    .auth-card h2 { font-family: 'Baloo 2', cursive; font-size: 32px; margin-bottom: 8px; }
+    .auth-card > p { color: var(--muted); margin-bottom: 28px; }
 
-    .btn-danger {
-      background: var(--danger);
-      color: white;
+    .auth-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; margin-bottom: 24px;
+      border-radius: 14px; background: var(--surface2);
     }
+    .auth-tabs button { padding: 12px; border-radius: 10px; color: var(--muted); background: transparent; font-weight: 600; }
+    .auth-tabs button.active { color: var(--text); background: var(--surface); box-shadow: 0 4px 14px rgba(15,23,42,0.08); }
 
-    .btn-ghost {
-      background: var(--surface-2);
-      color: var(--text);
+    .form-grid { display: grid; gap: 16px; }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%; padding: 14px 15px; border: 1px solid var(--border); border-radius: 13px;
+      outline: none; color: var(--text); background: var(--surface2); transition: border .2s;
     }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(245,158,11,0.14); }
 
-    .message {
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 14px;
-      background: rgba(214, 69, 69, .1);
-      color: var(--danger);
-      font-size: 14px;
+    .primary-btn, .secondary-btn, .danger-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 46px; padding: 12px 18px; border-radius: 13px; font-weight: 700; transition: .2s;
     }
+    .primary-btn { color: white; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+    .secondary-btn { color: var(--text); border: 1px solid var(--border); background: var(--surface); }
+    .danger-btn { color: white; background: var(--danger); }
+    .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover { transform: translateY(-2px); }
+    .full { width: 100%; }
 
-    .app {
-      min-height: 100vh;
-      padding-bottom: 90px;
-    }
+    .app-shell { min-height: 100vh; padding-bottom: 92px; }
 
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(247,248,250,.88);
-      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+      gap: 18px; padding: 18px clamp(18px, 5vw, 70px);
       border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
+      background: color-mix(in srgb, var(--surface) 86%, transparent); backdrop-filter: blur(16px);
     }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800; }
+    .brand-mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--green)); font-size: 24px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 12px; color: var(--text); background: var(--surface); }
+    .user-pill { display: flex; align-items: center; gap: 10px; padding: 5px 14px 5px 5px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
+    .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, var(--green), var(--cyan)); color: white; font-weight: 800; }
 
-    body.dark .topbar {
-      background: rgba(16,20,25,.88);
-    }
+    .page { width: min(1400px, 100%); margin: 0 auto; padding: 34px clamp(18px, 5vw, 70px); }
+    .page-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+    .page-title h1 { font-family: 'Baloo 2', cursive; font-size: clamp(36px, 5vw, 52px); line-height: 1; }
+    .page-title p { margin-top: 7px; color: var(--muted); }
 
-    .topbar-inner {
-      width: min(1180px, 100%);
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .top-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .top-brand img {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    .top-brand strong {
-      color: var(--primary);
-      font-family: "Baloo 2", cursive;
-      font-size: 22px;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .user-chip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 9px 13px;
-      border-radius: 13px;
-      font-size: 13px;
-    }
-
-    .content {
-      width: min(1180px, 100%);
-      margin: auto;
-      padding: 28px 20px;
-    }
-
-    .hero {
-      background:
-        linear-gradient(135deg, rgba(232,137,23,.94), rgba(185,95,0,.91)),
-        url("logo.png") center/contain no-repeat;
-      min-height: 190px;
-      border-radius: 28px;
-      padding: 28px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-
-    .hero::after {
-      content: "🌵";
-      position: absolute;
-      right: 26px;
-      bottom: -20px;
-      font-size: 150px;
-      opacity: .17;
-    }
-
-    .hero h1 {
-      font-size: clamp(30px, 5vw, 50px);
-      max-width: 650px;
-    }
-
-    .hero p {
-      max-width: 600px;
-      line-height: 1.6;
-      margin: 8px 0 0;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 28px 0 14px;
-    }
-
-    .section-title h2 {
-      font-size: 27px;
-    }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .grid-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
     .stat-card {
-      min-height: 130px;
+      position: relative; overflow: hidden; padding: 22px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow);
     }
+    .stat-card::after { content: ''; position: absolute; right: -20px; bottom: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(245,158,11,0.10); }
+    .stat-label { color: var(--muted); font-size: 13px; font-weight: 600; }
+    .stat-value { font-family: 'Baloo 2', cursive; font-size: 34px; line-height: 1; margin-top: 7px; }
+    .stat-icon { margin-bottom: 8px; font-size: 26px; }
 
-    .stat-card .emoji {
-      font-size: 27px;
-    }
+    .panel { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); padding: 24px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .panel-header h2 { font-family: 'Baloo 2', cursive; font-size: 24px; }
+    .content-grid { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 18px; margin-top: 18px; }
 
-    .stat-card strong {
-      display: block;
-      font-size: 30px;
-      margin-top: 8px;
-      font-family: "Baloo 2", cursive;
-    }
+    .progress-list { display: grid; gap: 18px; }
+    .progress-info { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 13px; }
+    .progress { height: 10px; border-radius: 99px; background: var(--surface2); overflow: hidden; }
+    .progress > div { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--green)); }
 
-    .stat-card span {
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .ranking { display: grid; gap: 10px; }
+    .ranking-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; background: var(--surface2); }
+    .ranking-pos { width: 26px; color: var(--primary-dark); font-weight: 800; text-align: center; }
+    .ranking-name { flex: 1; font-weight: 600; }
+    .xp-badge { padding: 5px 9px; border-radius: 8px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 12px; font-weight: 700; }
 
-    .progress-line {
-      width: 100%;
-      height: 10px;
-      background: var(--surface-2);
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 8px 0 6px;
-    }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+    .book-card, .post-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+    .book-cover { height: 170px; display: grid; place-items: center; background: linear-gradient(135deg, #f59e0b, #15803d); color: white; font-family: 'Baloo 2', cursive; font-size: 24px; }
+    .book-content, .post-content { padding: 18px; }
+    .book-content h3 { margin-bottom: 5px; }
+    .book-content p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .book-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
 
-    .progress-line span {
-      display: block;
-      height: 100%;
-      background: linear-gradient(90deg, var(--green), var(--cyan));
-      border-radius: inherit;
-    }
+    .tag { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 11px; font-weight: 700; }
 
-    .book-card {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .post-video { height: 220px; display: grid; place-items: center; background: linear-gradient(135deg, #06b6d4, #ec4899); color: white; font-size: 48px; }
+    .post-actions { display: flex; gap: 12px; margin-top: 14px; }
+    .post-actions button { padding: 6px 10px; border-radius: 9px; color: var(--muted); background: var(--surface2); }
 
-    .book-cover {
-      width: 100%;
-      height: 190px;
-      object-fit: cover;
-      border-radius: 17px;
-      background: var(--surface-2);
-    }
-
-    .book-card h3 {
-      font-size: 21px;
-    }
-
-    .book-meta {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .book-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: auto;
-    }
-
-    .mission-card {
-      border-left: 5px solid var(--pink);
-    }
-
-    .feed-card {
-      overflow: hidden;
-    }
-
-    .feed-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary), var(--green));
-      color: white;
-      font-weight: 800;
-    }
-
-    .feed-card video,
-    .feed-card img {
-      width: 100%;
-      max-height: 370px;
-      object-fit: cover;
-      border-radius: 16px;
-      background: #000;
-    }
-
-    .feed-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .feed-actions button {
-      background: var(--surface-2);
-      color: var(--text);
-      border-radius: 10px;
-      padding: 8px 12px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      z-index: 20;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 9px 10px;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .bottom-nav button {
-      width: 105px;
-      padding: 9px 6px;
-      border-radius: 13px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .bottom-nav button.active {
-      background: rgba(232,137,23,.13);
-      color: var(--primary);
-      font-weight: 800;
-    }
-
-    .bottom-nav .nav-icon {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 2px;
-    }
+    .empty-state { padding: 50px 20px; color: var(--muted); text-align: center; }
 
     .modal {
-      position: fixed;
-      z-index: 100;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(0,0,0,.58);
+      position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px;
+      background: rgba(15,23,42,0.55); backdrop-filter: blur(5px);
     }
+    .modal-card { width: min(100%, 560px); max-height: calc(100vh - 40px); overflow-y: auto; padding: 28px; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .modal-header h2 { font-family: 'Baloo 2', cursive; font-size: 28px; }
 
-    .modal-content {
-      width: min(100%, 560px);
-      max-height: 90vh;
-      overflow: auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 24px;
+    .bottom-nav {
+      position: fixed; left: 50%; bottom: 16px; z-index: 20;
+      width: min(720px, calc(100% - 28px));
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 7px;
+      border: 1px solid var(--border); border-radius: 22px;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      box-shadow: var(--shadow); backdrop-filter: blur(16px);
+      transform: translateX(-50%);
     }
+    .nav-btn { display: grid; justify-items: center; gap: 3px; padding: 9px 4px; border-radius: 14px; color: var(--muted); background: transparent; font-size: 11px; font-weight: 600; }
+    .nav-btn span:first-child { font-size: 20px; }
+    .nav-btn.active { color: var(--primary-dark); background: rgba(245,158,11,0.12); }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+    .section-space { margin-top: 28px; }
+    .muted { color: var(--muted); }
+    .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+
+    @media (max-width: 1050px) {
+      .auth-layout { grid-template-columns: 1fr; }
+      .auth-hero { min-height: 400px; }
+      .auth-hero-content { margin-top: 60px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .content-grid { grid-template-columns: 1fr; }
     }
-
-    .close-modal {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--surface-2);
-      color: var(--text);
-    }
-
-    .empty {
-      padding: 30px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: 20px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 5px 9px;
-      border-radius: 99px;
-      background: rgba(47,158,98,.12);
-      color: var(--green);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .badge.pending {
-      background: rgba(232,137,23,.14);
-      color: var(--primary-dark);
-    }
-
-    .badge.rejected {
-      background: rgba(214,69,69,.12);
-      color: var(--danger);
-    }
-
-    @media (max-width: 900px) {
-      .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .grid-3 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 620px) {
-      .content {
-        padding: 18px 14px;
-      }
-
-      .topbar {
-        padding: 10px 14px;
-      }
-
-      .top-brand strong {
-        font-size: 18px;
-      }
-
-      .user-chip {
-        display: none;
-      }
-
-      .grid-4,
-      .grid-3,
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding: 22px;
-      }
-
-      .bottom-nav button {
-        width: 20%;
-        font-size: 10px;
-      }
-
-      .bottom-nav .nav-icon {
-        font-size: 18px;
-      }
+    @media (max-width: 720px) {
+      .auth-hero { min-height: 370px; padding: 32px 22px; }
+      .auth-hero-content h1 { font-size: 48px; }
+      .auth-panel { padding: 18px; }
+      .auth-card { padding: 24px; }
+      .topbar { padding: 14px 18px; }
+      .page { padding: 25px 16px 100px; }
+      .page-title { flex-direction: column; align-items: flex-start; }
+      .stats-grid, .cards-grid { grid-template-columns: 1fr; }
+      .bottom-nav { bottom: 10px; }
     }
   </style>
 </head>
-
 <body>
-  <section id="authScreen" class="auth-screen">
-    <div class="auth-card">
-      <div class="brand">
-        <img src="logo.png" alt="Logo Sertão Literário">
-        <div>
-          <h1>Sertão Literário</h1>
-          <small>Leitura, comunidade e conquistas</small>
-        </div>
-      </div>
 
-      <div class="tabs">
-        <button id="loginTab" class="active">Entrar</button>
-        <button id="registerTab">Criar conta</button>
-      </div>
-
-      <div id="authMessage" class="message hidden"></div>
-
-      <form id="loginForm">
-        <div class="field">
-          <label>E-mail</label>
-          <input id="loginEmail" type="email" required placeholder="voce@email.com">
-        </div>
-
-        <div class="field">
-          <label>Senha</label>
-          <input id="loginPassword" type="password" required minlength="6">
-        </div>
-
-        <button class="btn btn-primary" type="submit" style="width:100%">
-          Entrar no Sertão Literário
-        </button>
-      </form>
-
-      <form id="registerForm" class="hidden">
-        <div class="field">
-          <label>Nome completo</label>
-          <input id="registerName" required placeholder="Digite seu nome">
-        </div>
-
-        <div class="field">
-          <label>E-mail</label>
-          <input id="registerEmail" type="email" required placeholder="voce@email.com">
-        </div>
-
-        <div class="field">
-          <label>Senha de acesso</label>
-          <input id="registerPassword" type="password" required minlength="6" maxlength="6" pattern="[0-9]{6}" placeholder="6 dígitos">
-        </div>
-
-        <div class="field">
-          <label>Perfil</label>
-          <select id="registerRole" required>
-            <option value="aluno">Aluno</option>
-            <option value="professor">Professor</option>
-            <option value="coordenador">Coordenador</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Turma</label>
-          <input id="registerClass" placeholder="Ex.: 6º Ano">
-        </div>
-
-        <div id="securityCodeField" class="field hidden">
-          <label>Código de segurança</label>
-          <input id="securityCode" placeholder="Código do perfil">
-        </div>
-
-        <button class="btn btn-green" type="submit" style="width:100%">
-          Criar minha conta
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <main id="app" class="app hidden">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="top-brand">
-          <img src="logo.png" alt="Sertão Literário">
-          <strong>Sertão Literário</strong>
-        </div>
-
-        <div class="top-actions">
-          <div id="userChip" class="user-chip"></div>
-          <button id="themeBtn" class="icon-btn" title="Alternar tema">🌙</button>
-          <button id="logoutBtn" class="icon-btn" title="Sair">↪</button>
-        </div>
-      </div>
-    </header>
-
-    <div class="content">
-      <section id="page-home"></section>
-      <section id="page-library" class="hidden"></section>
-      <section id="page-store" class="hidden"></section>
-      <section id="page-booktok" class="hidden"></section>
-      <section id="page-profile" class="hidden"></section>
-    </div>
-
-    <nav class="bottom-nav">
-      <button data-page="home" class="active">
-        <span class="nav-icon">🏜️</span>
-        Início
-      </button>
-
-      <button data-page="library">
-        <span class="nav-icon">📚</span>
-        Biblioteca
-      </button>
-
-      <button data-page="store">
-        <span class="nav-icon">🛍️</span>
-        Loja
-      </button>
-
-      <button data-page="booktok">
-        <span class="nav-icon">🎬</span>
-        BookTok
-      </button>
-
-      <button data-page="profile">
-        <span class="nav-icon">👤</span>
-        Perfil
-      </button>
-    </nav>
-  </main>
+  <div id="app"></div>
 
   <div id="modal" class="modal hidden">
-    <div class="modal-content">
+    <div class="modal-card">
       <div class="modal-header">
-        <h2 id="modalTitle">Formulário</h2>
-        <button id="closeModal" class="close-modal">✕</button>
+        <h2 id="modalTitle">Título</h2>
+        <button id="closeModalBtn" class="icon-btn">×</button>
       </div>
       <div id="modalBody"></div>
     </div>
   </div>
 
+  <div id="toast" class="toast"></div>
+
   <script type="module">
-    import {
-      initializeApp
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
-    import {
-      getAuth,
-      onAuthStateChanged,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      addDoc,
-      collection,
-      query,
-      orderBy,
-      onSnapshot,
-      updateDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, runTransaction, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA-xVOI6qXkEndKXkSp6-zRLY01qNkQH4E",
@@ -806,700 +248,582 @@
       appId: "1:291651799720:web:b5c79954511f09b8ddd09d"
     };
 
-    const firebaseApp = initializeApp(firebaseConfig);
-    const auth = getAuth(firebaseApp);
-    const db = getFirestore(firebaseApp);
-    const storage = getStorage(firebaseApp);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const PROFESSOR_CODE = "SERTAO-PROF-2026";
+    const COORDINATOR_CODE = "SERTAO-COORD-2026";
 
     let currentUser = null;
     let currentProfile = null;
-    let activePage = "home";
-    let books = [];
-    let missions = [];
-    let readings = [];
-    let posts = [];
-    let unsubscribeFunctions = [];
+    let currentPage = "home";
+    let currentTheme = localStorage.getItem("st-theme") || "light";
 
-    const $ = selector => document.querySelector(selector);
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
 
-    function showMessage(message) {
-      const box = $("#authMessage");
-      box.textContent = message;
-      box.classList.remove("hidden");
+    document.body.classList.toggle("dark", currentTheme === "dark");
+
+    function toast(msg, type = "") {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.className = `toast show ${type}`;
+      setTimeout(() => t.className = "toast", 3500);
     }
 
-    function clearMessage() {
-      $("#authMessage").classList.add("hidden");
+    function initials(name) {
+      return (name || "SL").split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
     }
 
-    function escapeHtml(value = "") {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function roleLabel(r) {
+      return { student: "Aluno", teacher: "Professor", coordinator: "Coordenador" }[r] || "Usuário";
     }
 
-    function roleLabel(role) {
-      return {
-        aluno: "Aluno",
-        professor: "Professor",
-        coordenador: "Coordenador"
-      }[role] || role;
-    }
-
-    function isStaff() {
-      return ["professor", "coordenador"].includes(currentProfile?.role);
-    }
-
-    function isCoordinator() {
-      return currentProfile?.role === "coordenador";
-    }
-
-    function openModal(title, content) {
+    function openModal(title, body) {
       $("#modalTitle").textContent = title;
-      $("#modalBody").innerHTML = content;
+      $("#modalBody").innerHTML = body;
       $("#modal").classList.remove("hidden");
     }
 
     function closeModal() {
       $("#modal").classList.add("hidden");
-      $("#modalBody").innerHTML = "";
     }
 
-    $("#closeModal").addEventListener("click", closeModal);
+    function pageTitle(title, desc, extra = "") {
+      return `<div class="page-title"><div><h1>${title}</h1><p>${desc}</p></div>${extra}</div>`;
+    }
 
-    $("#loginTab").addEventListener("click", () => {
-      $("#loginTab").classList.add("active");
-      $("#registerTab").classList.remove("active");
-      $("#loginForm").classList.remove("hidden");
-      $("#registerForm").classList.add("hidden");
-      clearMessage();
-    });
+    function statCard(icon, label, value) {
+      return `<div class="stat-card"><div class="stat-icon">${icon}</div><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
+    }
 
-    $("#registerTab").addEventListener("click", () => {
-      $("#registerTab").classList.add("active");
-      $("#loginTab").classList.remove("active");
-      $("#registerForm").classList.remove("hidden");
-      $("#loginForm").classList.add("hidden");
-      clearMessage();
-    });
+    function renderApp() {
+      const isStu = currentProfile.role === "student";
 
-    $("#registerRole").addEventListener("change", event => {
-      const role = event.target.value;
-      const securityField = $("#securityCodeField");
-      const classField = $("#registerClass");
+      document.getElementById("app").innerHTML = `
+        <div class="app-shell">
+          <header class="topbar">
+            <div class="brand"><div class="brand-mark">🌵</div><span>Sertão Literário</span></div>
+            <div class="top-actions">
+              <button id="themeBtn" class="icon-btn">${currentTheme === "dark" ? "☀" : "☾"}</button>
+              <div class="user-pill"><div class="avatar">${initials(currentProfile.name)}</div><span>${currentProfile.name?.split(" ")[0]}</span></div>
+              <button id="logoutBtn" class="secondary-btn">Sair</button>
+            </div>
+          </header>
+          <main id="pageContent" class="page"></main>
+          <nav class="bottom-nav">
+            ${["home","library","store","booktok","profile"].map((p,i) =>
+              `<button class="nav-btn ${p===currentPage?"active":""}" data-page="${p}"><span>${["🏠","📚","🛍️","🎬","👤"][i]}</span><span>${["Home","Biblioteca","Loja","BookTok","Perfil"][i]}</span></button>`
+            ).join("")}
+          </nav>
+        </div>`;
 
-      if (role === "aluno") {
-        securityField.classList.add("hidden");
-        classField.required = true;
-      } else {
-        securityField.classList.remove("hidden");
-        classField.required = false;
-      }
-    });
-
-    $("#loginForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      clearMessage();
-
-      try {
-        await signInWithEmailAndPassword(
-          auth,
-          $("#loginEmail").value.trim(),
-          $("#loginPassword").value
-        );
-      } catch (error) {
-        showMessage traduzirErro(error);
-      }
-    });
-
-    $("#registerForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  clearMessage();
-
-  const name = $("#registerName").value.trim();
-  const email = $("#registerEmail").value.trim();
-  const password = $("#registerPassword").value.trim();
-  const role = $("#registerRole").value;
-  const className = $("#registerClass").value.trim();
-  const securityCode = $("#securityCode").value.trim();
-
-  if (!name || !email || !password || !role) {
-    showMessage("Preencha todos os campos obrigatórios.");
-    return;
-  }
-
-  if (!/^\d{6}$/.test(password)) {
-    showMessage("A senha precisa conter exatamente 6 dígitos.");
-    return;
-  }
-
-  if (role === "aluno" && !className) {
-    showMessage("Informe a turma do aluno.");
-    return;
-  }
-
-  if (
-    role === "professor" &&
-    securityCode !== "SERTAO-PROF-2026"
-  ) {
-    showMessage("Código de segurança do professor inválido.");
-    return;
-  }
-
-  if (
-    role === "coordenador" &&
-    securityCode !== "SERTAO-COORD-2026"
-  ) {
-    showMessage("Código master do coordenador inválido.");
-    return;
-  }
-
-  try {
-    const credentials = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    const profile = {
-      uid: credentials.user.uid,
-      name,
-      email,
-      role,
-      className: role === "aluno" ? className : "",
-      xp: 0,
-      cactoscoins: 0,
-      level: 1,
-      createdAt: serverTimestamp()
-    };
-
-    await setDoc(
-      doc(db, "users", credentials.user.uid),
-      profile
-    );
-
-    alert("Conta criada com sucesso!");
-  } catch (error) {
-    console.error("Erro ao criar conta:", error);
-    showMessage(traduzirErro(error));
-  }
-});
-    function traduzirErro(error) {
-      const code = error?.code || "";
-
-      const errors = {
-        "auth/invalid-email": "O e-mail informado é inválido.",
-        "auth/email-already-in-use": "Este e-mail já está cadastrado.",
-        "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
-        "auth/invalid-credential": "E-mail ou senha incorretos.",
-        "auth/user-not-found": "Usuário não encontrado.",
-        "auth/wrong-password": "Senha incorreta."
+      $("#themeBtn").onclick = () => {
+        currentTheme = currentTheme === "dark" ? "light" : "dark";
+        document.body.classList.toggle("dark", currentTheme === "dark");
+        localStorage.setItem("st-theme", currentTheme);
+        renderApp();
       };
 
-      return errors[code] || "Não foi possível concluir a operação.";
+      $("#logoutBtn").onclick = async () => { await signOut(auth); };
+
+      $$(".nav-btn").forEach(b => b.onclick = () => { currentPage = b.dataset.page; renderApp(); });
+
+      loadPage();
     }
 
-    $("#logoutBtn").addEventListener("click", () => signOut(auth));
-
-    $("#themeBtn").addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      localStorage.setItem(
-        "sertao-theme",
-        document.body.classList.contains("dark") ? "dark" : "light"
-      );
-      $("#themeBtn").textContent =
-        document.body.classList.contains("dark") ? "☀️" : "🌙";
-    });
-
-    if (localStorage.getItem("sertao-theme") === "dark") {
-      document.body.classList.add("dark");
-      $("#themeBtn").textContent = "☀️";
+    function loadPage() {
+      const pages = { home: renderHome, library: renderLibrary, store: renderStore, booktok: renderBookTok, profile: renderProfile };
+      pages[currentPage]();
     }
 
-    document.querySelectorAll(".bottom-nav button").forEach(button => {
-      button.addEventListener("click", () => {
-        activePage = button.dataset.page;
+    async function renderHome() {
+      const p = currentProfile;
+      const isStu = p.role === "student";
 
-        document.querySelectorAll(".bottom-nav button")
-          .forEach(item => item.classList.remove("active"));
+      let rankingHtml = '<div class="empty-state">Aguardando dados</div>';
 
-        button.classList.add("active");
-
-        document.querySelectorAll("[id^='page-']")
-          .forEach(page => page.classList.add("hidden"));
-
-        $(`#page-${activePage}`).classList.remove("hidden");
-        renderPage(activePage);
-      });
-    });
-
-    onAuthStateChanged(auth, async user => {
-      if (!user) {
-        currentUser = null;
-        currentProfile = null;
-        $("#authScreen").classList.remove("hidden");
-        $("#app").classList.add("hidden");
-        unsubscribeFunctions.forEach(fn => fn());
-        unsubscribeFunctions = [];
-        return;
-      }
-
-      currentUser = user;
-
-      const profileSnap = await getDoc(doc(db, "users", user.uid));
-
-      if (!profileSnap.exists()) {
-        await signOut(auth);
-        showMessage("Perfil do usuário não encontrado.");
-        return;
-      }
-
-      currentProfile = profileSnap.data();
-
-      $("#authScreen").classList.add("hidden");
-      $("#app").classList.remove("hidden");
-      $("#userChip").textContent =
-        `{roleLabel(currentProfile.role)}`;
-
-      subscribeToData();
-      renderPage("home");
-    });
-
-    function subscribeToData() {
-      unsubscribeFunctions.forEach(fn => fn());
-      unsubscribeFunctions = [];
-
-      const booksQuery = query(
-        collection(db, "books"),
-        orderBy("title")
-      );
-
-      const missionsQuery = query(
-        collection(db, "missions"),
-        orderBy("createdAt", "desc")
-      );
-
-      const readingsQuery = query(
-        collection(db, "readings"),
-        orderBy("createdAt", "desc")
-      );
-
-      const postsQuery = query(
-        collection(db, "posts"),
-        orderBy("createdAt", "desc")
-      );
-
-      unsubscribeFunctions.push(
-        onSnapshot(booksQuery, snapshot => {
-          books = snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
-          renderPage(activePage);
-        })
-      );
-
-      unsubscribeFunctions.push(
-        onSnapshot(missionsQuery, snapshot => {
-          missions = snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
-          renderPage(activePage);
-        })
-      );
-
-      unsubscribeFunctions.push(
-        onSnapshot(readingsQuery, snapshot => {
-          readings = snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
-          renderPage(activePage);
-        })
-      );
-
-      unsubscribeFunctions.push(
-        onSnapshot(postsQuery, snapshot => {
-          posts = snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
-          renderPage(activePage);
-        })
-      );
-    }
-
-    function renderPage(page) {
-      if (!currentProfile) return;
-
-      if (page === "home") renderHome();
-      if (page === "library") renderLibrary();
-      if (page === "store") renderStore();
-      if (page === "booktok") renderBookTok();
-      if (page === "profile") renderProfile();
-    }
-
-    function renderHome() {
-      const isAluno = currentProfile.role === "aluno";
-
-      const userReadings = readings.filter(item =>
-        isAluno ? item.userId === currentUser.uid : true
-      );
-
-      const approvedReadings = userReadings.filter(
-        item => item.status === "approved"
-      );
-
-      const totalBooks = approvedReadings.length;
-      const target = currentProfile.goalBimester || 10;
-      const progress = Math.min((totalBooks / target) * 100, 100);
-
-      const activeMissions = missions.filter(item => item.active !== false);
-
-      $("#page-home").innerHTML = `
-        <section class="hero">
-          <h1>{escapeHtml(currentProfile.name)}!` : `Painel do ${roleLabel(currentProfile.role)}`}</h1>
-          <p>
-            ${isAluno
-              ? "Sua próxima grande aventura pode começar em qualquer página."
-              : "Acompanhe o desenvolvimento leitor da sua comunidade escolar."}
-          </p>
-        </section>
-
-        <div class="section-title">
-          <h2>Visão geral</h2>
-        </div>
-
-        <div class="grid grid-4">
-          <div class="card stat-card">
-            <div class="emoji">🌵</div>
-            <strong>${currentProfile.cactoscoins || 0}</strong>
-            <span>Cactoscoins</span>
-          </div>
-
-          <div class="card stat-card">
-            <div class="emoji">⚡</div>
-            <strong>${currentProfile.xp || 0}</strong>
-            <span>XP acumulado</span>
-          </div>
-
-          <div class="card stat-card">
-            <div class="emoji">🏆</div>
-            <strong>${currentProfile.level || 1}</strong>
-            <span>Nível atual</span>
-          </div>
-
-          <div class="card stat-card">
-            <div class="emoji">📚</div>
-            <strong>${totalBooks}</strong>
-            <span>Livros aprovados</span>
-          </div>
-        </div>
-
-        <div class="section-title">
-          <h2>${isAluno ? "Minha meta bimestral" : "Engajamento leitor"}</h2>
-        </div>
-
-        <div class="card">
-          <strong>{totalBooks} de {approvedReadings.length} leituras registradas`}</strong>
-          <div class="progress-line">
-            <span style="width:${progress}%"></span>
-          </div>
-          <small style="color:var(--muted)">
-            {Math.round(progress)}% concluído` : "Dados atualizados em tempo real"}
-          </small>
-        </div>
-
-        <div class="section-title">
-          <h2>Desafios ativos</h2>
-          ${isStaff() ? `<button class="btn btn-primary" id="newMissionBtn">+ Criar desafio</button>` : ""}
-        </div>
-
-        <div class="grid grid-3">
-          ${
-            activeMissions.length
-              ? activeMissions.slice(0, 6).map(renderMissionCard).join("")
-              : `<div class="empty">Nenhum desafio ativo no momento.</div>`
+      if (isStu) {
+        try {
+          const q = query(collection(db, "users"), where("className", "==", p.className), where("role", "==", "student"), orderBy("xp", "desc"), limit(5));
+          const snap = await getDocs(q);
+          const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          if (users.length) {
+            rankingHtml = users.map((u, i) =>
+              `<div class="ranking-item"><div class="ranking-pos">${i+1}</div><div class="avatar" style="width:30px;height:30px;font-size:13px">${initials(u.name)}</div><div class="ranking-name">${u.name}</div><span class="xp-badge">${u.xp||0} XP</span></div>`
+            ).join("");
           }
+        } catch (e) { console.error(e); }
+      }
+
+      const booksRead = p.booksRead || 0;
+      const xp = p.xp || 0;
+      const coins = p.cactoscoins || 0;
+      const level = p.level || 1;
+
+      $("#pageContent").innerHTML = `
+        ${pageTitle(`Olá, ${(p.name||"").split(" ")[0]||"Leitor"}!`, isStu ? `Turma ${p.className}` : `Painel • ${roleLabel(p.role)}`)}
+
+        <div class="stats-grid">
+          ${isStu ? statCard("🌵","Cactoscoins",coins) : statCard("👥","Turmas",p.role==="coordinator"?"Todas":"3")}
+          ${isStu ? statCard("⭐","XP",xp) : statCard("📖","Leituras pendentes","0")}
+          ${isStu ? statCard("🏅","Nível",level) : statCard("🎯","Missões ativas","0")}
+          ${isStu ? statCard("📚","Livros lidos",booksRead) : statCard("📈","Engajamento","0%")}
         </div>
 
-        ${
-          isStaff()
-            ? `
-              <div class="section-title">
-                <h2>Leituras aguardando aprovação</h2>
-              </div>
-
-              <div class="grid grid-2">
-                ${
-                  readings.filter(item => item.status === "pending").length
-                    ? readings
-                      .filter(item => item.status === "pending")
-                      .slice(0, 8)
-                      .map(renderReadingApprovalCard)
-                      .join("")
-                    : `<div class="empty">Não há leituras aguardando aprovação.</div>`
-                }
-              </div>
-            `
-            : ""
-        }
-      `;
-
-      $("#newMissionBtn")?.addEventListener("click", openMissionModal);
-
-      document.querySelectorAll("[data-approve-reading]")
-        .forEach(button => {
-          button.addEventListener("click", () =>
-            updateReadingStatus(button.dataset.approveReading, "approved")
-          );
-        });
-
-      document.querySelectorAll("[data-reject-reading]")
-        .forEach(button => {
-          button.addEventListener("click", () =>
-            updateReadingStatus(button.dataset.rejectReading, "rejected")
-          );
-        });
-    }
-
-    function renderMissionCard(mission) {
-      return `
-        <div class="card mission-card">
-          <span class="badge">${mission.type || "Desafio"}</span>
-          <h3 style="margin-top:10px">${escapeHtml(mission.title)}</h3>
-          <p style="color:var(--muted);line-height:1.5">
-            ${escapeHtml(mission.description || "")}
-          </p>
-          <strong style="color:var(--primary)">
-            +{mission.rewardXp || 0} XP
-          </strong>
+        <div class="content-grid">
+          <section class="panel">
+            <div class="panel-header"><h2>Metas de leitura</h2></div>
+            <div class="progress-list">
+              <div><div class="progress-info"><span>Meta bimestral</span><strong>${booksRead} de 10</strong></div><div class="progress"><div style="width:${Math.min(booksRead/10*100,100)}%"></div></div></div>
+              <div><div class="progress-info"><span>Meta semestral</span><strong>${booksRead} de 30</strong></div><div class="progress"><div style="width:${Math.min(booksRead/30*100,100)}%"></div></div></div>
+              <div><div class="progress-info"><span>Meta anual</span><strong>${booksRead} de 60</strong></div><div class="progress"><div style="width:${Math.min(booksRead/60*100,100)}%"></div></div></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-header"><h2>Ranking</h2><span class="tag">Top 5</span></div>
+            <div class="ranking">${rankingHtml}</div>
+          </section>
         </div>
-      `;
+
+        <section class="panel section-space">
+          <div class="panel-header"><h2>Missões da turma</h2>${!isStu ? '<button class="primary-btn" id="newMissionBtn">Criar desafio</button>' : ''}</div>
+          <div id="missionsContainer"><div class="empty-state">Nenhuma missão ativa.</div></div>
+        </section>`;
+
+      $("#newMissionBtn")?.addEventListener("click", showMissionModal);
+      loadMissions();
     }
 
-    function renderReadingApprovalCard(reading) {
-      return `
-        <div class="card">
-          <span class="badge pending">Aguardando aprovação</span>
-          <h3 style="margin-top:10px">${escapeHtml(reading.bookTitle)}</h3>
-          <p style="color:var(--muted)">
-            Aluno: ${escapeHtml(reading.userName || "Usuário")}
-          </p>
-          <p>
-            {escapeHtml(reading.date || "")}
-          </p>
+    async function loadMissions() {
+      try {
+        const q = query(collection(db, "missions"), where("isActive","==",true), orderBy("createdAt","desc"), limit(20));
+        const snap = await getDocs(q);
+        const el = $("#missionsContainer");
+        if (snap.empty) { el.innerHTML = '<div class="empty-state">Nenhuma missão ativa.</div>'; return; }
+        el.innerHTML = snap.docs.map(d => {
+          const m = d.data();
+          return `<div class="panel" style="padding:18px;margin-bottom:10px">
+            <div class="flex-between"><strong>${m.title}</strong><span class="reward" style="color:var(--primary-dark);font-weight:800">+${m.coins||0} 🌵</span></div>
+            <p class="muted" style="margin-top:6px">${m.description}</p>
+            ${currentProfile.role==="student" ? `<button class="primary-btn" style="margin-top:10px;padding:8px 12px;min-height:auto;font-size:13px" data-mission="${d.id}">Concluir missão</button>` : ''}
+          </div>`;
+        }).join("");
+        $$("[data-mission]").forEach(b => b.onclick = () => toast("Missão enviada para validação!", "success"));
+      } catch(e) { console.error(e); }
+    }
 
-          <div class="book-actions">
-            <button class="btn btn-green" data-approve-reading="${reading.id}">
-              Aprovar
-            </button>
-            <button class="btn btn-danger" data-reject-reading="${reading.id}">
-              Rejeitar
-            </button>
+    function showMissionModal() {
+      openModal("Criar desafio", `
+        <form id="missionForm" class="form-grid">
+          <label>Título <input name="title" required /></label>
+          <label>Descrição <textarea name="description" required></textarea></label>
+          <label>Recompensa (Cactoscoins) <input name="coins" type="number" min="1" value="50" /></label>
+          <button class="primary-btn full" type="submit">Publicar desafio</button>
+        </form>`);
+      $("#missionForm").onsubmit = async (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        await addDoc(collection(db, "missions"), { title: fd.get("title"), description: fd.get("description"), coins: Number(fd.get("coins")), className: currentProfile.className, isActive: true, createdBy: currentUser.uid, createdAt: new Date().toISOString() });
+        closeModal();
+        toast("Desafio publicado!", "success");
+        renderHome();
+      };
+    }
+
+    async function renderLibrary() {
+      let books = [];
+      try {
+        const q = query(collection(db, "books"), where("isActive","==",true), orderBy("title"));
+        const snap = await getDocs(q);
+        books = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch(e) { console.error(e); }
+
+      const isStaff = currentProfile.role !== "student";
+
+      $("#pageContent").innerHTML = `
+        ${pageTitle("Biblioteca", isStaff ? "Gerencie os livros." : "Descubra leituras.", isStaff ? '<button class="primary-btn" id="addBookBtn">+ Livro</button>' : "")}
+        <div class="panel">
+          <div class="flex" style="margin-bottom:18px"><input id="searchInput" placeholder="Buscar..." style="flex:1" /></div>
+          <div id="booksGrid" class="cards-grid">
+            ${books.length ? books.map(b => `
+              <article class="book-card">
+                <div class="book-cover">📚</div>
+                <div class="book-content">
+                  <span class="tag">${b.category||"Literatura"}</span>
+                  <h3>${b.title}</h3>
+                  <p>${b.author||""} • ${b.pages||0}p</p>
+                  <div class="book-meta">
+                    ${b.pdfUrl ? `<a class="secondary-btn" href="${b.pdfUrl}" target="_blank" style="font-size:12px">📄 PDF</a>` : '<span class="muted" style="font-size:12px">Sem PDF</span>'}
+                    ${isStaff ? `<button class="danger-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-del="${b.id}">Excluir</button>` : currentProfile.role==="student" ? `<button class="primary-btn" style="font-size:12px;padding:6px 10px;min-height:auto" data-read="${b.title}">Ler</button>` : ''}
+                  </div>
+                </div>
+              </article>
+            `).join("") : '<div class="empty-state">Nenhum livro cadastrado.</div>'}
           </div>
-        </div>
-      `;
-    }
+        </div>`;
 
-    async function updateReadingStatus(readingId, status) {
-      const reading = readings.find(item => item.id === readingId);
-      if (!reading) return;
+      $("#searchInput").oninput = (e) => {
+        const t = e.target.value.toLowerCase();
+        $$(".book-card").forEach(c => {
+          c.style.display = c.textContent.toLowerCase().includes(t) ? "" : "none";
+        });
+      };
 
-      await updateDoc(doc(db, "readings", readingId), {
-        status,
-        reviewedBy: currentUser.uid,
-        reviewedAt: serverTimestamp()
+      $("#addBookBtn")?.onclick = () => {
+        openModal("Adicionar livro", `
+          <form id="bookForm" class="form-grid">
+            <label>Título <input name="title" required /></label>
+            <label>Autor <input name="author" required /></label>
+            <label>Páginas <input name="pages" type="number" min="1" /></label>
+            <label>Categoria <input name="category" value="Literatura" /></label>
+            <label>Link do PDF <input name="pdfUrl" type="url" /></label>
+            <button class="primary-btn full" type="submit">Salvar</button>
+          </form>`);
+        $("#bookForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          await addDoc(collection(db, "books"), { title: fd.get("title"), author: fd.get("author"), pages: Number(fd.get("pages")), category: fd.get("category"), pdfUrl: fd.get("pdfUrl"), isActive: true, createdAt: new Date().toISOString() });
+          closeModal();
+          toast("Livro adicionado!", "success");
+          renderLibrary();
+        };
+      };
+
+      $$("[data-del]").forEach(b => b.onclick = async () => {
+        if (confirm("Excluir este livro?")) {
+          await deleteDoc(doc(db, "books", b.dataset.del));
+          toast("Livro removido.");
+          renderLibrary();
+        }
       });
 
-      if (status === "approved") {
-        const studentRef = doc(db, "users", reading.userId);
-        const studentSnap = await getDoc(studentRef);
-
-        if (studentSnap.exists()) {
-          const student = studentSnap.data();
-
-          await updateDoc(studentRef, {
-            xp: (student.xp || 0) + 25,
-            cactoscoins: (student.cactoscoins || 0) + 10,
-            level: Math.floor(((student.xp || 0) + 25) / 100) + 1
+      $$("[data-read]").forEach(b => b.onclick = () => {
+        openModal("Registrar leitura", `
+          <form id="readForm" class="form-grid">
+            <label>Livro <input name="bookTitle" value="${b.dataset.read}" readonly /></label>
+            <label>Páginas lidas <input name="pages" type="number" min="1" required /></label>
+            <label>Data <input name="date" type="date" required /></label>
+            <button class="primary-btn full" type="submit">Enviar para aprovação</button>
+          </form>`);
+        $("#readForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          await addDoc(collection(db, "readings"), {
+            userId: currentUser.uid,
+            userName: currentProfile.name,
+            className: currentProfile.className,
+            bookTitle: fd.get("bookTitle"),
+            pagesRead: Number(fd.get("pages")),
+            readingDate: fd.get("date"),
+            status: "pending",
+            createdAt: new Date().toISOString()
           });
-        }
-      }
+          closeModal();
+          toast("Leitura enviada para aprovação!", "success");
+        };
+      });
     }
 
-    function renderLibrary() {
-      $("#page-library").innerHTML = `
-        <div class="section-title">
-          <h2>Biblioteca</h2>
-          ${
-            isStaff()
-              ? `<button class="btn btn-primary" id="newBookBtn">+ Adicionar livro</button>`
-              : `<button class="btn btn-green" id="newReadingBtn">+ Registrar leitura</button>`
-          }
+    async function renderStore() {
+      let items = [];
+      try {
+        const snap = await getDocs(query(collection(db, "storeItems"), where("isActive","==",true)));
+        items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch(e) { console.error(e); }
+
+      const isStu = currentProfile.role === "student";
+      const coins = currentProfile.cactoscoins || 0;
+
+      $("#pageContent").innerHTML = `
+        ${pageTitle("Loja Literária", isStu ? `${coins} Cactoscoins disponíveis` : "Itens para os alunos.")}
+        <div class="stats-grid" style="margin-bottom:18px">
+          ${statCard("🌵","Saldo",coins)}
+          ${statCard("⭐","XP",currentProfile.xp||0)}
         </div>
-
-        <div class="grid grid-3">
-          ${
-            books.length
-              ? books.map(renderBookCard).join("")
-              : `<div class="empty">Nenhum livro cadastrado ainda.</div>`
-          }
-        </div>
-      `;
-
-      $("#newBookBtn")?.addEventListener("click", openBookModal);
-      $("#newReadingBtn")?.addEventListener("click", openReadingModal);
-    }
-
-    function renderBookCard(book) {
-      return `
-        <div class="card book-card">
-          <img class="book-cover"
-            src="${escapeHtml(book.coverUrl || "https://placehold.co/600x800/e88917/ffffff?text=Livro")}"
-            alt="Capa de ${escapeHtml(book.title)}">
-
-          <div>
-            <h3>${escapeHtml(book.title)}</h3>
-            <div class="book-meta">
-              ${escapeHtml(book.author || "Autor não informado")}
-            </div>
-            <div class="book-meta">
-              ${book.pages || 0} páginas
-            </div>
-          </div>
-
-          <div class="book-actions">
-            ${
-              book.pdfUrl
-                ? `<a class="btn btn-ghost" target="_blank" href="${escapeHtml(book.pdfUrl)}">Abrir PDF</a>`
-                : ""
-            }
-
-            ${
-              currentProfile.role === "aluno"
-                ? `<button class="btn btn-green" data-read-book="${book.id}">Ler este livro</button>`
-                : ""
-            }
-          </div>
-        </div>
-      `;
-    }
-
-    function renderStore() {
-      const themes = [
-        {
-          title: "Tema Sertão",
-          description: "Cores do sol, cactos e paisagens nordestinas.",
-          cost: 50,
-          emoji: "🏜️"
-        },
-        {
-          title: "Tema Cordel",
-          description: "Visual inspirado na literatura de cordel.",
-          cost: 80,
-          emoji: "📜"
-        },
-        {
-          title: "Tema Neon",
-          description: "Uma experiência vibrante para o BookTok.",
-          cost: 120,
-          emoji: "✨"
-        }
-      ];
-
-      $("#page-store").innerHTML = `
-        <div class="section-title">
-          <h2>Loja Literária</h2>
-        </div>
-
-        ${
-          isStaff()
-            ? `<div class="card">
-                <span class="badge">Área administrativa</span>
-                <h3 style="margin-top:10px">Itens para os alunos</h3>
-                <p style="color:var(--muted)">
-                  Professores e coordenadores podem administrar campanhas,
-                  temas e recompensas sem gastar Cactoscoins.
-                </p>
-              </div>`
-            : ""
-        }
-
-        <div class="grid grid-3" style="margin-top:16px">
-          ${
-            themes.map(theme => `
-              <div class="card">
-                <div style="font-size:42px">${theme.emoji}</div>
-                <h3>${theme.title}</h3>
-                <p style="color:var(--muted)">${theme.description}</p>
-                <strong style="color:var(--primary)">
-                  ${theme.cost} 🌵
-                </strong>
-                <div style="margin-top:14px">
-                  ${
-                    currentProfile.role === "aluno"
-                      ? `<button class="btn btn-primary" data-buy-theme="{theme.cost}">
-                          Comprar tema
-                        </button>`
-                      : `<span class="badge">Disponível para gestão</span>`
-                  }
+        <div class="cards-grid">
+          ${items.length ? items.map(i => `
+            <article class="book-card">
+              <div class="book-cover">${i.icon||"🎨"}</div>
+              <div class="book-content">
+                <h3>${i.title}</h3>
+                <p>${i.description||""}</p>
+                <div class="book-meta">
+                  <strong>🌵 ${i.priceCoins||0} • ⭐ ${i.requiredXp||0}</strong>
+                  ${isStu ? `<button class="primary-btn" data-buy='${JSON.stringify(i)}'>Comprar</button>` : ''}
                 </div>
               </div>
-            `).join("")
-          }
-        </div>
-      `;
+            </article>
+          `).join("") : '<div class="empty-state">Nenhum item disponível.</div>'}
+        </div>`;
 
-      document.querySelectorAll("[data-buy-theme]").forEach(button => {
-        button.addEventListener("click", async () => {
-          const cost = Number(button.dataset.cost);
-
-          if ((currentProfile.cactoscoins || 0) < cost) {
-            alert("Você ainda não possui Cactoscoins suficientes.");
-            return;
-          }
-
-          await updateDoc(doc(db, "users", currentUser.uid), {
-            cactoscoins: currentProfile.cactoscoins - cost,
-            selectedTheme: button.dataset.buyTheme
+      $$("[data-buy]").forEach(b => b.onclick = async () => {
+        const item = JSON.parse(b.dataset.buy);
+        if (coins < item.priceCoins) return toast("Cactoscoins insuficientes.", "error");
+        if ((currentProfile.xp||0) < item.requiredXp) return toast("XP insuficiente.", "error");
+        try {
+          await runTransaction(db, async (tx) => {
+            const ref = doc(db, "users", currentUser.uid);
+            const snap = await tx.get(ref);
+            const u = snap.data();
+            if ((u.cactoscoins||0) < item.priceCoins) throw new Error("Saldo");
+            tx.update(ref, { cactoscoins: (u.cactoscoins||0) - item.priceCoins });
+            tx.set(doc(collection(db, "purchases")), { userId: currentUser.uid, itemId: item.id, price: item.priceCoins, createdAt: new Date().toISOString() });
           });
-
-          currentProfile.cactoscoins -= cost;
-          alert("Tema adquirido com sucesso.");
-          renderPage("store");
-        });
+          toast("Item adquirido!", "success");
+          setTimeout(() => renderStore(), 500);
+        } catch(e) { toast("Erro na compra.", "error"); }
       });
     }
 
-    function renderBookTok() {
-      $("#page-booktok").innerHTML = `
-        <div class="section-title">
-          <h2>BookTok</h2>
-          <button class="btn btn-primary" id="newPostBtn">+ Publicar resenha</button>
-        </div>
+    async function renderBookTok() {
+      let posts = [];
+      try {
+        const q = currentProfile.role === "coordinator"
+          ? query(collection(db, "posts"), where("status","==","active"), orderBy("createdAt","desc"))
+          : query(collection(db, "posts"), where("className","==",currentProfile.className), where("status","==","active"), orderBy("createdAt","desc"));
+        const snap = await getDocs(q);
+        posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch(e) { console.error(e); }
 
-        <div class="grid grid-2">
-          ${
-            posts.length
-              ? posts.map(renderPostCard).join("")
-              : `<div class="empty">Ainda não existem publicações.</div>`
-          }
-        </div>
-      `;
+      $("#pageContent").innerHTML = `
+        ${pageTitle("BookTok", "Compartilhe resenhas.", '<button class="primary-btn" id="newPostBtn">Nova resenha</button>')}
+        <div class="cards-grid">
+          ${posts.length ? posts.map(p => `
+            <article class="post-card">
+              <div class="post-video">${p.videoUrl ? "▶" : "📖"}</div>
+              <div class="post-content">
+                <span class="tag">@${(p.userName||"").toLowerCase().replace(/\s/g,"")}</span>
+                <h3>${p.title}</h3>
+                <p>${p.description}</p>
+                <div class="post-actions">
+                  <button class="like-btn" data-id="${p.id}">❤️ ${p.likesCount||0}</button>
+                  <button>💬 ${p.commentsCount||0}</button>
+                </div>
+              </div>
+            </article>
+          `).join("") : '<div class="empty-state">Nenhuma publicação ainda.</div>'}
+        </div>`;
 
-      $("#newPostBtn").addEventListener("click", openPostModal);
+      $("#newPostBtn").onclick = () => {
+        openModal("Nova resenha", `
+          <form id="postForm" class="form-grid">
+            <label>Título <input name="title" required /></label>
+            <label>Descrição <textarea name="description" required></textarea></label>
+            <label>Link do vídeo <input name="videoUrl" type="url" /></label>
+            <button class="primary-btn full" type="submit">Publicar</button>
+          </form>`);
+        $("#postForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          await addDoc(collection(db, "posts"), {
+            title: fd.get("title"), description: fd.get("description"), videoUrl: fd.get("videoUrl"),
+            userId: currentUser.uid, userName: currentProfile.name, className: currentProfile.className,
+            likesCount: 0, commentsCount: 0, status: "active", createdAt: new Date().toISOString()
+          });
+          closeModal();
+          toast("Resenha publicada!", "success");
+          renderBookTok();
+        };
+      };
+
+      $$(".like-btn").forEach(b => b.onclick = async () => {
+        await updateDoc(doc(db, "posts", b.dataset.id), { likesCount: increment(1) });
+        toast("Curtiu!");
+        renderBookTok();
+      });
     }
 
-    function renderPostCard(post) {
-      return `
-        <article class="card feed-card">
-          <div class="feed-header">
-            <div class="avatar">${escapeHtml((post.userName || "U").charAt(0).toUpperCase())}</div>
-            <div>
-              <strong>${escapeHtml(post.userName || "Usuário")}</strong>
-              <div 
+    function renderProfile() {
+      const p = currentProfile;
+      $("#pageContent").innerHTML = `
+        ${pageTitle("Meu perfil", "Gerencie suas informações.", `<span class="tag" style="font-size:14px">${roleLabel(p.role)}</span>`)}
+        <div class="content-grid">
+          <div class="panel">
+            <h2 style="margin-bottom:20px">Informações</h2>
+            <div class="form-grid">
+              <label>Nome <input id="editName" value="${p.name||''}" /></label>
+              <label>E-mail <input value="${p.email||''}" disabled /></label>
+              <label>Turma <input value="${p.className||''}" disabled /></label>
+              <button id="saveBtn" class="primary-btn full">Salvar alterações</button>
+              <button id="pwdBtn" class="secondary-btn full">Alterar senha</button>
+              <button id="delBtn" class="danger-btn full">Apagar conta</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h2 style="margin-bottom:20px">Histórico</h2>
+            <div class="progress-list">
+              <div class="ranking-item"><span>📚</span><span class="ranking-name">Livros lidos</span><strong>${p.booksRead||0}</strong></div>
+              <div class="ranking-item"><span>⭐</span><span class="ranking-name">XP</span><strong>${p.xp||0}</strong></div>
+              <div class="ranking-item"><span>🏅</span><span class="ranking-name">Nível</span><strong>${p.level||1}</strong></div>
+              <div class="ranking-item"><span>🌵</span><span class="ranking-name">Cactoscoins</span><strong>${p.cactoscoins||0}</strong></div>
+            </div>
+          </div>
+        </div>`;
+
+      $("#saveBtn").onclick = async () => {
+        const name = $("#editName").value.trim();
+        if (!name) return toast("Informe seu nome.", "error");
+        await updateDoc(doc(db, "users", currentUser.uid), { name });
+        currentProfile.name = name;
+        toast("Perfil atualizado!", "success");
+      };
+
+      $("#pwdBtn").onclick = async () => {
+        const current = prompt("Senha atual:");
+        if (!current) return;
+        const newPwd = prompt("Nova senha (6+):");
+        if (!newPwd || newPwd.length < 6) return toast("Nova senha inválida.", "error");
+        try {
+          const cred = EmailAuthProvider.credential(auth.currentUser.email, current);
+          await reauthenticateWithCredential(auth.currentUser, cred);
+          await updatePassword(auth.currentUser, newPwd);
+          toast("Senha alterada!", "success");
+        } catch { toast("Senha atual incorreta.", "error"); }
+      };
+
+      $("#delBtn").onclick = async () => {
+        const c = prompt('Digite CONFIRMAR para excluir sua conta:');
+        if (c !== "CONFIRMAR") return;
+        const pwd = prompt("Sua senha atual:");
+        if (!pwd) return;
+        try {
+          const cred = EmailAuthProvider.credential(auth.currentUser.email, pwd);
+          await reauthenticateWithCredential(auth.currentUser, cred);
+          await deleteDoc(doc(db, "users", currentUser.uid));
+          await deleteUser(auth.currentUser);
+          toast("Conta excluída.");
+        } catch { toast("Senha incorreta.", "error"); }
+      };
+    }
+
+    // AUTH
+    let isRegister = false;
+
+    function renderAuth() {
+      const saved = localStorage.getItem("st-theme");
+      if (saved === "dark") document.body.classList.add("dark");
+
+      document.getElementById("app").innerHTML = `
+        <div class="auth-layout">
+          <div class="auth-hero">
+            <div class="brand"><div class="brand-mark">🌵</div><span>Sertão Literário</span></div>
+            <div class="auth-hero-content">
+              <h1>A leitura virou jornada.</h1>
+              <p>Uma experiência literária gamificada. Leia, conquiste, compartilhe.</p>
+            </div>
+          </div>
+          <div class="auth-panel">
+            <div class="auth-card">
+              <h2 id="authTitle">Entrar na jornada</h2>
+              <p id="authDesc">Acesse seu painel de leitura.</p>
+              <div class="auth-tabs">
+                <button id="tabLogin" class="active">Entrar</button>
+                <button id="tabReg">Criar conta</button>
+              </div>
+              <form id="authForm" class="form-grid">
+                <div id="nameField" class="hidden"><label>Nome <input id="inpName" type="text" /></label></div>
+                <label>E-mail <input id="inpEmail" type="email" required /></label>
+                <div id="roleField" class="hidden">
+                  <label>Perfil <select id="inpRole">
+                    <option value="student">Aluno</option>
+                    <option value="teacher">Professor</option>
+                    <option value="coordinator">Coordenador</option>
+                  </select></label>
+                </div>
+                <div id="codeField" class="hidden"><label>Código <input id="inpCode" type="password" /></label></div>
+                <label>Senha <input id="inpPwd" type="password" minlength="6" required /></label>
+                <button class="primary-btn full" type="submit" id="authBtn">Entrar</button>
+              </form>
+            </div>
+          </div>
+        </div>`;
+
+      $("#tabLogin").onclick = () => setMode(false);
+      $("#tabReg").onclick = () => setMode(true);
+      $("#inpRole")?.addEventListener("change", () => {
+        $("#codeField").classList.toggle("hidden", $("#inpRole").value === "student");
+      });
+      $("#authForm").onsubmit = handleAuth;
+
+      setMode(false);
+    }
+
+    function setMode(reg) {
+      isRegister = reg;
+      $("#tabLogin").classList.toggle("active", !reg);
+      $("#tabReg").classList.toggle("active", reg);
+      $("#nameField").classList.toggle("hidden", !reg);
+      $("#roleField").classList.toggle("hidden", !reg);
+      if (!reg) $("#codeField").classList.add("hidden");
+      $("#authTitle").textContent = reg ? "Crie sua jornada" : "Entrar na jornada";
+      $("#authDesc").textContent = reg ? "Escolha seu perfil." : "Acesse seu painel.";
+      $("#authBtn").textContent = reg ? "Criar conta" : "Entrar";
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = $("#inpEmail").value.trim();
+      const pwd = $("#inpPwd").value;
+
+      if (!email || pwd.length < 6) return toast("E-mail e senha (6+ caracteres) obrigatórios.", "error");
+
+      try {
+        if (isRegister) {
+          const name = $("#inpName").value.trim();
+          const role = $("#inpRole").value;
+          const code = $("#inpCode")?.value?.trim() || "";
+
+          if (!name) return toast("Informe seu nome.", "error");
+          if (role === "teacher" && code !== PROFESSOR_CODE) return toast("Código de professor inválido.", "error");
+          if (role === "coordinator" && code !== COORDINATOR_CODE) return toast("Código de coordenador inválido.", "error");
+
+          const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+          await setDoc(doc(db, "users", cred.user.uid), {
+            name, email, role,
+            className: role === "coordinator" ? "Todas as turmas" : "6º Ano",
+            xp: 0, cactoscoins: 0, level: 1, booksRead: 0, isActive: true,
+            createdAt: new Date().toISOString()
+          });
+          toast("Conta criada!", "success");
+        } else {
+          await signInWithEmailAndPassword(auth, email, pwd);
+        }
+      } catch (err) {
+        const msgs = {
+          "auth/invalid-credential": "E-mail ou senha inválidos.",
+          "auth/email-already-in-use": "E-mail já cadastrado.",
+          "auth/too-many-requests": "Muitas tentativas. Aguarde."
+        };
+        toast(msgs[err.code] || "Erro ao acessar.", "error");
+        console.error(err);
+      }
+    }
+
+    // Bootstrap
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { currentUser = null; currentProfile = null; renderAuth(); return; }
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          currentUser = user;
+          currentProfile = { uid: user.uid, ...snap.data() };
+          renderApp();
+        } else {
+          renderAuth();
+        }
+      } catch(e) {
+        console.error(e);
+        renderAuth();
+      }
+    });
+
+    window.closeModal = closeModal;
+    $("#closeModalBtn").onclick = closeModal;
+    $("#modal").onclick = (e) => { if (e.target === $("#modal")) closeModal(); };
+
+  </script>
+</body>
+</html>
