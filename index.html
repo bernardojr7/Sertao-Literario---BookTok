@@ -860,7 +860,7 @@
               <label>Título <input name="title" required /></label>
               <label>Autor <input name="author" required /></label>
               <label>Páginas <input name="pages" type="number" min="1" required /></label>
-              <label>Categoria <input name="category" value="Literatura Sertaneja" /></label>
+              <label>Categoria <input name="category" value="Lieratura Infantil" /></label>
               
               <label>Capa - Escolher Imagem do Dispositivo / Galeria
                 <input type="file" id="inpCoverFile" accept="image/*" />
@@ -942,7 +942,29 @@
         };
       });
     }
+function renderizarBiblioteca() {
+  const container = document.getElementById('grid-biblioteca');
+  container.innerHTML = ''; 
 
+  biblioteca.forEach(livro => {
+    const card = document.createElement('div');
+    card.className = 'card-livro';
+    card.setAttribute('data-id', livro.id);
+
+    // 👇 O SEU HTML VEM AQUI DENTRO DA CRASE (Template String) 👇
+    card.innerHTML = `
+      <h3 class="titulo">${livro.titulo}</h3>
+      <p class="autor">${livro.autor}</p>
+      <span class="status">Disponível</span>
+
+      <div class="acoes">
+        <button class="btn-editar" onclick="abrirModalEdicao(${livro.id})">✏️ Editar</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
     // --- STORE PAGE ---
     async function renderStore() {
       const isStu = currentProfile.role === "student";
