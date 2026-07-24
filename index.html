@@ -105,6 +105,7 @@
       width: 100%; padding: 14px 15px; border: 1px solid var(--border); border-radius: 13px;
       outline: none; color: var(--text); background: var(--surface2); transition: border .2s;
     }
+    input[type="file"] { padding: 10px; cursor: pointer; }
     textarea { min-height: 110px; resize: vertical; }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(245,158,11,0.14); }
 
@@ -148,6 +149,7 @@
       display: grid; place-items: center; overflow: hidden;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-avatar-preview { width: 80px; height: 80px; font-size: 28px; margin-bottom: 10px; }
 
     .page { width: min(1400px, 100%); margin: 0 auto; padding: 34px clamp(18px, 5vw, 70px); }
     .page-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
@@ -275,7 +277,6 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
     const PROFESSOR_CODE = "SERTAO-PROF-2026";
     const COORDINATOR_CODE = "SERTAO-COORD-2026";
@@ -326,17 +327,27 @@
       return `<div class="stat-card"><div class="stat-icon">${icon}</div><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
     }
 
-    function renderAvatar(photoURL, name) {
+    function renderAvatar(photoURL, name, extraClass = "") {
       if (photoURL) {
-        return `<div class="avatar"><img src="${photoURL}" alt="Perfil" /></div>`;
+        return `<div class="avatar ${extraClass}"><img src="${photoURL}" alt="Perfil" /></div>`;
       }
-      return `<div class="avatar">${initials(name)}</div>`;
+      return `<div class="avatar ${extraClass}">${initials(name)}</div>`;
     }
 
-    // --- SEED INITIAL DATA (BILIOTECA, MISSÕES E CAMPANHAS) ---
+    // Função para ler arquivo da câmera/galeria e converter em Base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) return resolve("");
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // --- SEED INITIAL DATA ---
     async function seedInitialData() {
       try {
-        // Seed Books
         const booksSnap = await db.collection("books").get();
         if (booksSnap.empty) {
           const initialBooks = [
@@ -349,7 +360,6 @@
           for (const b of initialBooks) { await db.collection("books").add(b); }
         }
 
-        // Seed Missions
         const missionsSnap = await db.collection("missions").get();
         if (missionsSnap.empty) {
           const initialMissions = [
@@ -360,7 +370,6 @@
           for (const m of initialMissions) { await db.collection("missions").add(m); }
         }
 
-        // Seed Campaigns
         const campaignsSnap = await db.collection("campaigns").get();
         if (campaignsSnap.empty) {
           const initialCampaigns = [
@@ -816,10 +825,15 @@
         `<div class="content-grid">
           <div class="panel">
             <h2 style="margin-bottom:20px">Informações Pessoais</h2>
+            <div style="text-align:center;margin-bottom:20px">
+              ${renderAvatar(p.photoURL, p.name, "profile-avatar-preview")}
+            </div>
             <div class="form-grid">
               <label>Nome Completo <input id="editName" value="${p.name || ""}" /></label>
               <label>E-mail <input value="${p.email || ""}" disabled /></label>
-              <label>URL da Foto de Perfil / Logo <input id="editPhoto" value="${p.photoURL || ""}" placeholder="https://exemplo.com/foto.jpg" /></label>
+              <label>Alterar Foto de Perfil / Logo (Câmera ou Galeria)
+                <input id="editPhoto" type="file" accept="image/*" />
+              </label>
               <label>Turma(s) Vinculada(s) <input value="${turmasTexto}" disabled /></label>
               <button id="saveBtn" class="primary-btn full">Salvar Alterações</button>
               <button id="pwdBtn" class="secondary-btn full">Alterar Senha</button>
@@ -838,8 +852,13 @@
 
       document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("editName").value.trim();
-        const photoURL = document.getElementById("editPhoto").value.trim();
+        const photoFile = document.getElementById("editPhoto").files[0];
         if (!name) return toast("Informe seu nome.", "error");
+
+        let photoURL = currentProfile.photoURL || "";
+        if (photoFile) {
+          photoURL = await fileToBase64(photoFile);
+        }
 
         await db.collection("users").doc(currentUser.uid).update({ name, photoURL });
         currentProfile.name = name;
@@ -915,9 +934,11 @@
                   <div class="checkbox-group">${turmasCheckboxes}</div>
                 </div>
 
-                <!-- Campo de Foto/Logo (Opcional) -->
+                <!-- Upload de Foto/Logo (Câmera ou Galeria) -->
                 <div id="photoField" class="hidden">
-                  <label>URL da Foto de Perfil / Logo (Opcional) <input id="inpPhoto" type="url" placeholder="https://exemplo.com/foto.jpg" /></label>
+                  <label>Foto de Perfil / Logo (Câmera ou Galeria)
+                    <input id="inpPhoto" type="file" accept="image/*" />
+                  </label>
                 </div>
 
                 <div id="codeField" class="hidden"><label>Código de Acesso Institucional <input id="inpCode" type="password" /></label></div>
@@ -971,10 +992,15 @@
         if (isRegister) {
           const name = $("#inpName").value.trim();
           const role = $("#inpRole").value;
-          const photoURL = $("#inpPhoto").value.trim();
+          const photoFile = $("#inpPhoto").files[0];
           const code = $("#inpCode") ? $("#inpCode").value.trim() : "";
 
           if (!name) return toast("Informe seu nome completo.", "error");
+
+          let photoURL = "";
+          if (photoFile) {
+            photoURL = await fileToBase64(photoFile);
+          }
 
           let selectedClasses = [];
           let studentClass = "";
