@@ -115,14 +115,14 @@
     .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; }
     .checkbox-item input { width: auto; }
 
-    .primary-btn, .secondary-btn, .danger-btn {
+    .primary-btn, .secondary-btn, .danger-btn, .btn-editar {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       min-height: 44px; padding: 10px 18px; border-radius: 13px; font-weight: 700; transition: .2s;
     }
     .primary-btn { color: white; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
-    .secondary-btn { color: var(--text); border: 1px solid var(--border); background: var(--surface); }
+    .secondary-btn, .btn-editar { color: var(--text); border: 1px solid var(--border); background: var(--surface2); }
     .danger-btn { color: white; background: var(--danger); }
-    .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover { transform: translateY(-2px); }
+    .primary-btn:hover, .secondary-btn:hover, .danger-btn:hover, .btn-editar:hover { transform: translateY(-2px); }
     .full { width: 100%; }
 
     /* Main App Layout */
@@ -182,16 +182,17 @@
     .ranking-name { flex: 1; font-weight: 600; }
     .xp-badge { padding: 5px 9px; border-radius: 8px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 12px; font-weight: 700; }
 
+    /* Book Cards & Styles */
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
-    .book-card, .post-card, .campaign-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); display: flex; flex-direction: column; }
+    .book-card, .card-livro, .post-card, .campaign-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); display: flex; flex-direction: column; }
     .book-cover { height: 190px; display: grid; place-items: center; background: linear-gradient(135deg, #f59e0b, #15803d); color: white; font-family: 'Baloo 2', cursive; font-size: 32px; overflow: hidden; position: relative; }
     .book-cover img { width: 100%; height: 100%; object-fit: cover; }
     .book-content, .post-content, .campaign-content { padding: 18px; flex: 1; display: flex; flex-direction: column; }
-    .book-content h3, .campaign-content h3 { margin-bottom: 5px; }
-    .book-content p, .campaign-content p { color: var(--muted); font-size: 13px; line-height: 1.5; flex: 1; }
-    .book-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 8px; flex-wrap: wrap; }
+    .book-content h3, .campaign-content h3, .card-livro .titulo { margin-bottom: 5px; font-family: 'Baloo 2', cursive; font-size: 20px; }
+    .book-content p, .campaign-content p, .card-livro .autor { color: var(--muted); font-size: 13px; line-height: 1.5; flex: 1; }
+    .book-meta, .card-livro .acoes { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 8px; flex-wrap: wrap; }
 
-    .tag { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 11px; font-weight: 700; margin-bottom: 6px; align-self: flex-start; }
+    .tag, .status { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--green-dark); background: rgba(34,197,94,0.13); font-size: 11px; font-weight: 700; margin-bottom: 6px; align-self: flex-start; }
 
     .post-video { height: 220px; display: grid; place-items: center; background: linear-gradient(135deg, #06b6d4, #ec4899); color: white; font-size: 48px; }
     .post-actions { display: flex; gap: 12px; margin-top: 14px; }
@@ -361,9 +362,10 @@
         const booksSnap = await db.collection("books").get();
         if (booksSnap.empty) {
           const initialBooks = [
-            { title: "O Auto da Compadecida", author: "Ariano Suassuna", pages: 208, category: "Teatro / Sertão", coverUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
-            { title: "Vidas Secas", author: "Graciliano Ramos", pages: 176, category: "Literatura Sertaneja", coverUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() },
-            { title: "O Pequeno Príncipe", author: "Antoine de Saint-Exupéry", pages: 96, category: "Infanto-Juvenil", coverUrl: "", pdfUrl: "", isActive: true, createdAt: new Date().toISOString() }
+            { title: "O Senhor dos Anéis", author: "J.R.R. Tolkien", pages: 1200, category: "Fantasia", coverUrl: "", pdfUrl: "", status: "Disponível", isActive: true, createdAt: new Date().toISOString() },
+            { title: "O Auto da Compadecida", author: "Ariano Suassuna", pages: 208, category: "Teatro / Sertão", coverUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80", pdfUrl: "", status: "Disponível", isActive: true, createdAt: new Date().toISOString() },
+            { title: "Vidas Secas", author: "Graciliano Ramos", pages: 176, category: "Literatura Sertaneja", coverUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80", pdfUrl: "", status: "Disponível", isActive: true, createdAt: new Date().toISOString() },
+            { title: "O Pequeno Príncipe", author: "Antoine de Saint-Exupéry", pages: 96, category: "Infanto-Juvenil", coverUrl: "", pdfUrl: "", status: "Disponível", isActive: true, createdAt: new Date().toISOString() }
           ];
           for (const b of initialBooks) { await db.collection("books").add(b); }
         }
@@ -597,7 +599,7 @@
       }
     }
 
-    // --- STUDENT DETAILS MODAL (FOR TEACHERS) ---
+    // --- STUDENT DETAILS MODAL ---
     async function viewStudentDetails(studentId) {
       openModal("Carregando perfil...", '<div class="empty-state">Carregando histórico do aluno...</div>');
       try {
@@ -606,7 +608,6 @@
         
         const st = userDoc.data();
         
-        // Fetch Reading History
         const readingsSnap = await db.collection("readings").where("userId", "==", studentId).get();
         const readings = [];
         readingsSnap.forEach(d => readings.push(d.data()));
@@ -798,11 +799,56 @@
     }
     window.deleteMission = deleteMission;
 
-    // --- LIBRARY PAGE (FIXED FETCH & COVER CAPTURE) ---
+    // --- FUNCTION TO EDIT BOOK ---
+    async function abrirModalEdicao(id) {
+      try {
+        const doc = await db.collection("books").doc(String(id)).get();
+        if (!doc.exists) {
+          toast("Livro não encontrado.", "error");
+          return;
+        }
+        const book = doc.data();
+
+        openModal("✏️ Editar Livro", `
+          <form id="editBookForm" class="form-grid">
+            <label>Título <input name="title" value="${book.title || ''}" required /></label>
+            <label>Autor <input name="author" value="${book.author || ''}" required /></label>
+            <label>Status <input name="status" value="${book.status || 'Disponível'}" required /></label>
+            <label>Páginas <input name="pages" type="number" min="1" value="${book.pages || 0}" required /></label>
+            <label>Categoria <input name="category" value="${book.category || ''}" /></label>
+            <label>URL da Capa <input name="coverUrl" value="${book.coverUrl || ''}" /></label>
+            <label>Link do PDF <input name="pdfUrl" value="${book.pdfUrl || ''}" /></label>
+            <button class="primary-btn full" type="submit">Salvar Alterações</button>
+          </form>
+        `);
+
+        $("#editBookForm").onsubmit = async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          await db.collection("books").doc(String(id)).update({
+            title: fd.get("title"),
+            author: fd.get("author"),
+            status: fd.get("status"),
+            pages: Number(fd.get("pages")),
+            category: fd.get("category"),
+            coverUrl: fd.get("coverUrl"),
+            pdfUrl: fd.get("pdfUrl")
+          });
+          closeModal();
+          toast("Livro atualizado com sucesso!", "success");
+          renderLibrary();
+        };
+      } catch(err) {
+        console.error(err);
+        toast("Erro ao carregar modal de edição.", "error");
+      }
+    }
+    window.abrirModalEdicao = abrirModalEdicao;
+
+    // --- LIBRARY PAGE ---
     async function renderLibrary() {
       let books = [];
       try {
-        // Fetch query sem orderBy composite index para garantir a exibição dos livros salvos
         const snap = await db.collection("books").get();
         snap.forEach(d => {
           const b = d.data();
@@ -822,20 +868,20 @@
           : '📚';
 
         booksHtml += `
-          <article class="book-card">
+          <div class="card-livro book-card" data-id="${b.id}">
             <div class="book-cover">${coverStyle}</div>
             <div class="book-content">
-              <span class="tag">${b.category || "Literatura"}</span>
-              <h3>${b.title}</h3>
-              <p>${b.author || "Autor não informado"} • ${b.pages || 0} pgs</p>
-              <div class="book-meta">
-                ${b.pdfUrl ? `<a class="secondary-btn" href="${b.pdfUrl}" target="_blank" style="font-size:12px">📄 PDF</a>` : '<span class="muted" style="font-size:12px">Sem PDF</span>'}
-                ${isStaff 
-                  ? `<button class="danger-btn" style="font-size:12px;padding:6px 10px" data-del="${b.id}">Excluir</button>`
-                  : `<button class="primary-btn" style="font-size:12px;padding:6px 10px" data-read="${b.title.replace(/"/g,"&quot;")}">Registrar Leitura</button>`}
+              <span class="status">${b.status || "Disponível"}</span>
+              <h3 class="titulo">${b.title}</h3>
+              <p class="autor">${b.author || "Autor não informado"}</p>
+              <div class="acoes book-meta">
+                ${b.pdfUrl ? `<a class="secondary-btn" href="${b.pdfUrl}" target="_blank" style="font-size:12px">📄 PDF</a>` : ''}
+                <button class="btn-editar" onclick="abrirModalEdicao('${b.id}')">✏️ Editar</button>
+                ${isStaff ? `<button class="danger-btn" style="font-size:12px;padding:6px 10px" data-del="${b.id}">Excluir</button>` : ''}
+                ${!isStaff ? `<button class="primary-btn" style="font-size:12px;padding:6px 10px" data-read="${b.title.replace(/"/g,"&quot;")}">Registrar Leitura</button>` : ''}
               </div>
             </div>
-          </article>`;
+          </div>`;
       }
 
       $("#pageContent").innerHTML =
@@ -847,7 +893,7 @@
 
       $("#searchInput").oninput = (e) => {
         const t = e.target.value.toLowerCase();
-        $$(".book-card").forEach(card => {
+        $$(".card-livro").forEach(card => {
           card.style.display = card.textContent.toLowerCase().includes(t) ? "" : "none";
         });
       };
@@ -860,7 +906,7 @@
               <label>Título <input name="title" required /></label>
               <label>Autor <input name="author" required /></label>
               <label>Páginas <input name="pages" type="number" min="1" required /></label>
-              <label>Categoria <input name="category" value="Lieratura Infantil" /></label>
+              <label>Categoria <input name="category" value="Literatura Sertaneja" /></label>
               
               <label>Capa - Escolher Imagem do Dispositivo / Galeria
                 <input type="file" id="inpCoverFile" accept="image/*" />
@@ -895,6 +941,7 @@
               category: fd.get("category"),
               coverUrl: coverUrl || "",
               pdfUrl: fd.get("pdfUrl") || "",
+              status: "Disponível",
               isActive: true,
               createdAt: new Date().toISOString()
             });
@@ -942,29 +989,7 @@
         };
       });
     }
-function renderizarBiblioteca() {
-  const container = document.getElementById('grid-biblioteca');
-  container.innerHTML = ''; 
 
-  biblioteca.forEach(livro => {
-    const card = document.createElement('div');
-    card.className = 'card-livro';
-    card.setAttribute('data-id', livro.id);
-
-    // 👇 O SEU HTML VEM AQUI DENTRO DA CRASE (Template String) 👇
-    card.innerHTML = `
-      <h3 class="titulo">${livro.titulo}</h3>
-      <p class="autor">${livro.autor}</p>
-      <span class="status">Disponível</span>
-
-      <div class="acoes">
-        <button class="btn-editar" onclick="abrirModalEdicao(${livro.id})">✏️ Editar</button>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-}
     // --- STORE PAGE ---
     async function renderStore() {
       const isStu = currentProfile.role === "student";
